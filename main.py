@@ -1,5 +1,6 @@
 import pygame
 from player import Player
+from pellet import Pellet
 
 pygame.init()
 
@@ -16,6 +17,9 @@ pygame.display.set_caption("Game thing")
 #create player
 player = Player(w, h)
 
+#create pellet
+pellet1 = Pellet(400, 300, screen)
+
 #---------------------------------------------------------------------------
 def update():
     global player
@@ -30,6 +34,8 @@ def draw():
 
     global player
     screen.blit(player.sprite, (player.x, player.y))
+
+    pellet1.draw()
 
 #game loop
 running = True
