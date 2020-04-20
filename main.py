@@ -13,8 +13,7 @@ screen = pygame.display.set_mode((w, h))
 #title and icon
 pygame.display.set_caption("Game thing")
 
-
-
+#create player
 player = Player(w, h)
 
 #---------------------------------------------------------------------------
