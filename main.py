@@ -2,6 +2,10 @@ import pygame
 from player import Player
 from pellet import Pellet
 
+# temp libraries
+from random import seed
+from random import randint
+
 pygame.init()
 
 #window dimensions
@@ -19,7 +23,15 @@ pygame.display.set_caption("Game thing")
 player = Player(w, h)
 
 #create pellet
-pellet1 = Pellet(400, 300, screen)
+# pellet1 = Pellet(400, 300, screen)
+
+#create pellet array
+pellet_list = []
+num_pellets = 6
+
+for i in range(0, num_pellets):
+    # append a new pellet object to the pellet_list[]
+    pellet_list.append(Pellet(randint(100, 700), randint(100, 500), screen))
 
 #---------------------------------------------------------------------------
 def update():
@@ -43,7 +55,13 @@ def draw():
         global player
         screen.blit(player.sprite, (player.x, player.y))
 
-        pellet1.draw()
+    # pellet1.draw()
+    for i in range(0, len(pellet_list)):
+        if pellet_list[i].isEaten == False:
+            pellet_list[i].checkCollision(player.x, player.y)
+
+        if pellet_list[i].isEaten == False:
+            pellet_list[i].draw()
 
 #game loop
 running = True
