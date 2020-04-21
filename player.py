@@ -15,11 +15,13 @@ class Player:
         self.vel = 0.5
         self.dirX = 0
         self.dirY = 0
+        self.score = 0
 
     def move(self):
         self.x += self.dirX * self.vel
         self.y += self.dirY * self.vel
 
+        #player position is the center of the sprite
         if self.x > self.scrnW - self.width/2:
             self.x = self.scrnW - self.width/2
         elif self.x < 0 + self.width/2:
