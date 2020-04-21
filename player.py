@@ -1,3 +1,4 @@
+from pygame import image, Color
 import pygame
 
 class Player:
@@ -27,9 +28,17 @@ class Player:
         self.dirY = 0
         self.score = 0
 
+
     def move(self):
-        self.x += self.dirX * self.vel
-        self.y += self.dirY * self.vel
+        movemap = image.load('movemap.png')
+        if movemap.get_at((int(self.x + self.dirX), int(self.y + self.dirY ))) != Color(255,255,255):
+            self.x += self.dirX * self.vel
+            self.y += self.dirY * self.vel
+        else:
+            pass
+
+
+
 
         #player position is the center of the sprite
         if self.x > self.scrnW - self.width/2:

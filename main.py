@@ -9,7 +9,7 @@ from random import randint
 pygame.init()
 
 #window dimensions
-w = 800
+w = 600
 h = 600
 frameCounter = 0
 
@@ -57,9 +57,9 @@ def draw():
     else:
     #background
         BLACK=(0,0,0)
-        screen.fill(BLACK)
-        pygame.draw.rect(screen,BLACK,(5,5,w,h))
-
+        # screen.fill(BLACK)
+        # pygame.draw.rect(screen,BLACK,(5,5,w,h))
+        screen.blit(pygame.image.load('colourmap.png'), (0,0))
         for pellet in pellet_list:
             pellet.draw()
 
