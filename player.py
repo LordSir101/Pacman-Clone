@@ -21,9 +21,6 @@ class Player:
 
     def move(self):
         movemap = image.load('movemap.png')
-        print(self.x, self.y)
-        print(int(self.x + self.dirX ), int(self.x + self.dirY))
-        print(" ")
         if movemap.get_at((int(self.x + self.dirX), int(self.y + self.dirY ))) != Color(255,255,255):
             self.x += self.dirX * self.vel
             self.y += self.dirY * self.vel
