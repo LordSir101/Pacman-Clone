@@ -11,6 +11,7 @@ pygame.init()
 #window dimensions
 w = 800
 h = 600
+frameCounter = 0
 
 gameStarted = False
 #create screen
@@ -36,6 +37,11 @@ for i in range(0, num_pellets):
 #---------------------------------------------------------------------------
 def update():
     global player
+    global frameCounter
+    frameCounter += 1
+    if frameCounter > player.animationRate:
+        player.changeFrame()
+        frameCounter = 0
     player.move()
 
     for pellet in reversed(pellet_list):
@@ -58,7 +64,7 @@ def draw():
             pellet.draw()
 
         global player
-        screen.blit(player.sprite, (player.x - player.width/2, player.y - player.height/2))
+        player.draw(screen)
 
         drawText("Score: " + str(player.score), 20, 0, 0, False)
 
@@ -91,19 +97,25 @@ while running:
             #left arrow
             if event.key == pygame.K_LEFT:
                 player.dirX = -1
+                player.idle = False
             if event.key == pygame.K_RIGHT:
                 player.dirX = 1
+                player.idle = False
             if event.key == pygame.K_UP:
                 player.dirY = -1
+                player.idle = False
             if event.key == pygame.K_DOWN:
                 player.dirY = 1
+                player.idle = False
 
         if event.type == pygame.KEYUP:
             #left arrow
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 player.dirX = 0
+                player.idle = True
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 player.dirY = 0
+                player.idle = True
 
 
     update()
