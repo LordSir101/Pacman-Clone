@@ -8,6 +8,7 @@ pygame.init()
 w = 800
 h = 600
 
+gameStarted = False
 #create screen
 screen = pygame.display.set_mode((w, h))
 
@@ -27,15 +28,22 @@ def update():
 
 #---------------------------------------------------------------------------
 def draw():
+    if gameStarted == False:
+        font = pygame.font.Font('freesansbold.ttf', 64)
+        overText = font.render("Click Any Button To Play", True, (255,255,255))
+        textW = overText.get_width()
+        textH = overText.get_height()
+        screen.blit(overText, (w/2 - textW/2, h/2 - textH))
+    else:
     #background
-    BLACK=(0,0,0)
-    screen.fill(BLACK)
-    pygame.draw.rect(screen,BLACK,(0,0,w,h))
+        BLACK=(0,0,0)
+        screen.fill(BLACK)
+        pygame.draw.rect(screen,BLACK,(0,0,w,h))
 
-    global player
-    screen.blit(player.sprite, (player.x, player.y))
+        global player
+        screen.blit(player.sprite, (player.x, player.y))
 
-    pellet1.draw()
+        pellet1.draw()
 
 #game loop
 running = True
@@ -48,6 +56,10 @@ while running:
 
         #key event handler-------------------------
         if event.type == pygame.KEYDOWN:
+
+            if gameStarted == False:
+                gameStarted = True
+
             #left arrow
             if event.key == pygame.K_LEFT:
                 player.dirX = -1
