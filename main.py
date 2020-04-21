@@ -41,20 +41,18 @@ def update():
     for pellet in reversed(pellet_list):
         if pellet.checkCollision(player):
             pellet_list.remove(pellet)
+            player.score += 10
 
 #---------------------------------------------------------------------------
 def draw():
     if gameStarted == False:
-        font = pygame.font.Font('freesansbold.ttf', 64)
-        overText = font.render("Click Any Button To Play", True, (255,255,255))
-        textW = overText.get_width()
-        textH = overText.get_height()
-        screen.blit(overText, (w/2 - textW/2, h/2 - textH))
+        #text, size, xpos, ypos, center text at point
+        drawText("Click Any Button To Play", 64, w/2, h/2, True)
     else:
     #background
         BLACK=(0,0,0)
         screen.fill(BLACK)
-        pygame.draw.rect(screen,BLACK,(0,0,w,h))
+        pygame.draw.rect(screen,BLACK,(5,5,w,h))
 
         for pellet in pellet_list:
             pellet.draw()
@@ -62,8 +60,18 @@ def draw():
         global player
         screen.blit(player.sprite, (player.x - player.width/2, player.y - player.height/2))
 
+        drawText("Score: " + str(player.score), 20, 0, 0, False)
 
 
+def drawText(text, size, x, y, center):
+    font = pygame.font.Font('freesansbold.ttf', size)
+    overText = font.render(text, True, (255,255,255))
+    textW = overText.get_width()
+    textH = overText.get_height()
+    if center:
+        screen.blit(overText, (x - textW/2, y - textH/2))
+    else:
+        screen.blit(overText, (x, y))
 
 #game loop
 running = True
