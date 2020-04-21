@@ -5,13 +5,14 @@ class Pellet:
         self.x = x
         self.y = y
         self.screen = screen
-        self.isEaten = False
+        self.rad = 5
+        #self.isEaten = False
 
     def draw(self):
-        pygame.draw.circle(self.screen, (255, 255, 255), [self.x, self.y], 10)
+        pygame.draw.circle(self.screen, (255, 255, 255), [self.x, self.y], self.rad)
 
-    def checkCollision(self, pacmanPosX, pacmanPosY):
-        distSquared = (self.x - pacmanPosX)**2 + (self.y - pacmanPosY)**2
+    def checkCollision(self, player):
+        distSquared = (self.x - player.x)**2 + (self.y - player.y)**2
 
-        if distSquared <= (10 + 30)**2:
-            self.isEaten = True
+        if distSquared <= (self.rad + player.width/2)**2:
+            return True

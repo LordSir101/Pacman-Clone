@@ -6,12 +6,12 @@ class Player:
         self.scrnH = height
 
         self.img = pygame.image.load("packman.png")
-        self.sprite = pygame.transform.scale(self.img, (60, 60))
+        self.sprite = pygame.transform.scale(self.img, (30, 30))
 
         self.width = self.sprite.get_width()
         self.height = self.sprite.get_height()
-        self.x = width/2
-        self.y = height/2
+        self.x = width/2 - self.width/2
+        self.y = height/2 - self.height/2
         self.vel = 0.5
         self.dirX = 0
         self.dirY = 0

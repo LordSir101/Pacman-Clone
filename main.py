@@ -27,7 +27,7 @@ player = Player(w, h)
 
 #create pellet array
 pellet_list = []
-num_pellets = 6
+num_pellets = 50
 
 for i in range(0, num_pellets):
     # append a new pellet object to the pellet_list[]
@@ -37,6 +37,10 @@ for i in range(0, num_pellets):
 def update():
     global player
     player.move()
+
+    for pellet in reversed(pellet_list):
+        if pellet.checkCollision(player):
+            pellet_list.remove(pellet)
 
 #---------------------------------------------------------------------------
 def draw():
@@ -52,16 +56,14 @@ def draw():
         screen.fill(BLACK)
         pygame.draw.rect(screen,BLACK,(0,0,w,h))
 
+        for pellet in pellet_list:
+            pellet.draw()
+
         global player
-        screen.blit(player.sprite, (player.x, player.y))
+        screen.blit(player.sprite, (player.x - player.width/2, player.y - player.height/2))
 
-    # pellet1.draw()
-    for i in range(0, len(pellet_list)):
-        if pellet_list[i].isEaten == False:
-            pellet_list[i].checkCollision(player.x, player.y)
 
-        if pellet_list[i].isEaten == False:
-            pellet_list[i].draw()
+
 
 #game loop
 running = True
