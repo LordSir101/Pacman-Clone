@@ -20,11 +20,11 @@ class Player:
         self.x += self.dirX * self.vel
         self.y += self.dirY * self.vel
 
-        if self.x > self.scrnW - self.width:
-            self.x = self.scrnW - self.width
-        elif self.x < 0:
-            self.x = 0
-        if self.y > self.scrnH - self.height:
-            self.y = self.scrnH - self.height
-        elif self.y < 0:
-            self.y = 0
+        if self.x > self.scrnW - self.width/2:
+            self.x = self.scrnW - self.width/2
+        elif self.x < 0 + self.width/2:
+            self.x = 0 + self.width/2
+        if self.y > self.scrnH - self.height/2:
+            self.y = self.scrnH - self.height/2
+        elif self.y < 0 + self.height/2:
+            self.y = 0  + self.height/2
