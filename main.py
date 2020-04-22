@@ -12,6 +12,7 @@ pygame.init()
 w = 600
 h = 600
 frameCounter = 0
+inputLock = False
 
 gameStarted = False
 #create screen
@@ -65,6 +66,8 @@ def draw():
 
         global player
         player.draw(screen)
+        #pygame.draw.circle(screen, (0, 255, 0), [int(player.x), int(player.y)], 1)
+        #pygame.draw.rect(screen, (255, 0, 0), player.getHitbox())
 
         drawText("Score: " + str(player.score), 20, 0, 0, False)
 
@@ -94,28 +97,34 @@ while running:
             if gameStarted == False:
                 gameStarted = True
 
-            #left arrow
-            if event.key == pygame.K_LEFT:
-                player.dirX = -1
-                player.idle = False
-            if event.key == pygame.K_RIGHT:
-                player.dirX = 1
-                player.idle = False
-            if event.key == pygame.K_UP:
-                player.dirY = -1
-                player.idle = False
-            if event.key == pygame.K_DOWN:
-                player.dirY = 1
-                player.idle = False
+            if not inputLock:
+                #left arrow
+                if event.key == pygame.K_LEFT:
+                    player.dirX = -1
+                    player.dirY = 0
+                    #inputLock = True
+                if event.key == pygame.K_RIGHT:
+                    player.dirX = 1
+                    player.dirY = 0
+                    #inputLock = True
+                if event.key == pygame.K_UP:
+                    player.dirY = -1
+                    player.dirX = 0
+                    #inputLock = True
+                if event.key == pygame.K_DOWN:
+                    player.dirY = 1
+                    player.dirX = 0
+                    #inputLock = True
 
         if event.type == pygame.KEYUP:
-            #left arrow
-            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                player.dirX = 0
-                player.idle = True
-            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                player.dirY = 0
-                player.idle = True
+            #if a key is being held down still, don't stop moving the sprite
+            if not any(pygame.key.get_pressed()):
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    player.dirX = 0
+                    inputLock = False
+                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                    player.dirY = 0
+                    inputLock = False
 
 
     update()
