@@ -12,9 +12,8 @@ pygame.init()
 w = 600
 h = 600
 frameCounter = 0
-inputLock = False
-
 gameStarted = False
+
 #create screen
 screen = pygame.display.set_mode((w, h))
 
@@ -24,8 +23,6 @@ pygame.display.set_caption("Game thing")
 #create player
 player = Player(w, h)
 
-#create pellet
-# pellet1 = Pellet(400, 300, screen)
 
 #create pellet array
 pellet_list = []
@@ -54,12 +51,9 @@ def update():
 def draw():
     if gameStarted == False:
         #text, size, xpos, ypos, center text at point
-        drawText("Click Any Button To Play", 64, w/2, h/2, True)
+        drawText("Click Any Button To Play", 45, w/2, h/2, True)
     else:
-    #background
-        BLACK=(0,0,0)
-        # screen.fill(BLACK)
-        # pygame.draw.rect(screen,BLACK,(5,5,w,h))
+        #background
         screen.blit(pygame.image.load('colourmap.png'), (0,0))
         for pellet in pellet_list:
             pellet.draw()
@@ -97,34 +91,33 @@ while running:
             if gameStarted == False:
                 gameStarted = True
 
-            if not inputLock:
-                #left arrow
-                if event.key == pygame.K_LEFT:
-                    player.dirX = -1
-                    player.dirY = 0
-                    #inputLock = True
-                if event.key == pygame.K_RIGHT:
-                    player.dirX = 1
-                    player.dirY = 0
-                    #inputLock = True
-                if event.key == pygame.K_UP:
-                    player.dirY = -1
-                    player.dirX = 0
-                    #inputLock = True
-                if event.key == pygame.K_DOWN:
-                    player.dirY = 1
-                    player.dirX = 0
-                    #inputLock = True
+            #left arrow
+            if event.key == pygame.K_LEFT:
+                player.dirX = -1
+                player.dirY = 0 #set to 0 in case user presses an arrow while holding down another arrow
+                #inputLock = True
+            if event.key == pygame.K_RIGHT:
+                player.dirX = 1
+                player.dirY = 0
+                #inputLock = True
+            if event.key == pygame.K_UP:
+                player.dirY = -1
+                player.dirX = 0
+                #inputLock = True
+            if event.key == pygame.K_DOWN:
+                player.dirY = 1
+                player.dirX = 0
+                #inputLock = True
 
         if event.type == pygame.KEYUP:
             #if a key is being held down still, don't stop moving the sprite
             if not any(pygame.key.get_pressed()):
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     player.dirX = 0
-                    inputLock = False
+
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     player.dirY = 0
-                    inputLock = False
+
 
 
     update()
