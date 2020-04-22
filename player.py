@@ -16,14 +16,14 @@ class Player:
 
 
         self.frame = 0
-        self.animationRate = 30
+        self.animationRate = 10
         self.sprite = pygame.transform.scale(self.imgs[1], (30, 30))
         self.width = self.sprite.get_width()
         self.height = self.sprite.get_height()
 
-        self.x = width/2 - self.width/2
+        self.x = width/2 - self.width/2 + 10
         self.y = height/2 - self.height/2
-        self.vel = 0.5
+        self.vel = 2
         self.dirX = 0
         self.dirY = 0
         self.score = 0
@@ -31,14 +31,15 @@ class Player:
 
     def move(self):
         movemap = image.load('movemap.png')
-        if movemap.get_at((int(self.x + self.dirX), int(self.y + self.dirY ))) != Color(255,255,255):
+        colourmap = image.load('colourmap.png')
+
+        #check if pacman will move into a wall
+        if movemap.get_at((int(self.x + self.dirX * self.vel), int(self.y + self.dirY *self.vel))) != Color(255,255,255):
             self.x += self.dirX * self.vel
             self.y += self.dirY * self.vel
+
         else:
             pass
-
-
-
 
         #player position is the center of the sprite
         if self.x > self.scrnW - self.width/2:
@@ -50,7 +51,15 @@ class Player:
         elif self.y < 0 + self.height/2:
             self.y = 0  + self.height/2
 
+
     def draw(self, screen):
+        #change state of pacman
+        if self.dirX != 0 or self.dirY != 0:
+            self.idle = False
+        else:
+            self.idle = True
+
+        #choose which frame to use
         if self.idle:
             sprite = pygame.transform.scale(self.imgs[0], (30, 30))
             screen.blit(sprite, (self.x - self.width/2, self.y - self.height/2))
