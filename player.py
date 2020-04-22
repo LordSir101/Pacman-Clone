@@ -6,17 +6,18 @@ class Player:
         self.scrnW = width
         self.scrnH = height
 
+        #images for pacman animation
         self.folder = "pacman_animation/"
-        self.img = pygame.image.load(self.folder+"pacman1.png")
-        self.idle = True
         self.imgs = [pygame.image.load(self.folder+"pacman1.png"),
                     pygame.image.load(self.folder+"pacman2.png"),
                     pygame.image.load(self.folder+"pacman3.png"),
                     pygame.image.load(self.folder+"pacman4.png")]
 
-
+        self.idle = True #state
         self.frame = 0
-        self.animationRate = 5
+        self.animationRate = 5 #speed of pacman animation
+
+        #use an image as reference for pacman dimensions
         self.sprite = pygame.transform.scale(self.imgs[1], (30, 30))
         self.width = self.sprite.get_width()
         self.height = self.sprite.get_height()
@@ -33,11 +34,12 @@ class Player:
         movemap = image.load('movemap.png')
         colourmap = image.load('colourmap.png')
 
-        #check if pacman will move into a wall
+
         #this is approximately where packman's sprite will collide with a wall
         nextX = self.x + self.dirX * self.vel + (self.width/3 * self.dirX)
         nextY = self.y + self.dirY *self.vel + (self.height/3*self.dirY)
-        
+
+        #check if pacman will move into a wall
         if movemap.get_at((int(nextX), int(nextY))) != Color(255,255,255):
             self.x += self.dirX * self.vel
             self.y += self.dirY * self.vel
@@ -70,6 +72,7 @@ class Player:
             screen.blit(sprite, (self.x - self.width/2, self.y - self.height/2))
         #if moving
         else:
+            #all pacman images face left, so various transformations must be applied depending on pacman's direction
             if self.dirX > 0:
                 sprite = pygame.transform.flip(self.imgs[self.frame], True, False)
                 scaled = pygame.transform.scale(sprite, (30, 30))
