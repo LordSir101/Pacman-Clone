@@ -17,7 +17,7 @@ class Ghost:
         self.y = self.bestPath[self.placeOnPath].y
 
     def getPath(self, start, root, target):
-        #endOfPath
+        endOfPath = False
 
 
     def draw(self, screen):

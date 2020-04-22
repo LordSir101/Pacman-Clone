@@ -28,7 +28,7 @@ player = Player(w, h)
 #create pellet array
 pellet_list = []
 num_pellets = 50
-ghostNodes = []
+nodeList = [] #list of actual nodes
 
 '''
 for i in range(0, num_pellets):
@@ -100,39 +100,91 @@ def checkDotPoint(x,y, image):
         return True
     return False
 
-def placeDots():
-    global pellet_list
-    global screen
-    x = 0
 
-    while x < 30:  #30
-        y = 0
-        while y < 29: #29
-            if checkDotPoint(10+x*20, 10 + y*20, 0):
-                pellet_list.append(Pellet(10+x*20, 10+y*20, screen))
-                #pacDots[i].status = 0
-                #i += 1
-            y += 1
-        x += 1
-
-
-#580
-#560
+pathScale = 20
+#ghostNodes = [[0 for x in range(int(10+(580/pathScale)*pathScale))] for y in range(int(10 + (560/pathScale)*pathScale))]
+ghostNodes = []
+ghostNodes.append([])
 def createGhostPath():
     global ghostNodes
-    pathScale = 10
+    global screen
+
+    y = 0
+    currY = 0
+
+    while y < 560 / pathScale:  #30
+        x = 0
+        currX = 0
+
+        while x < 580 / pathScale: #29
+            if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 1):
+                ghostNodes[currY].append(Node(10+x*pathScale, 10+y*pathScale))
+                #pacDots[i].status = 0
+                #i += 1
+            else:
+                ghostNodes[currY].append(None)
+
+            #currX += 1
+            x += 1
+
+        y += 1
+        currY += 1
+        ghostNodes.append([])
+
+print(ghostNodes[0][0])
+for y in range(len(ghostNodes)):
+    for x in range(len(ghostNodes[y])):
+        if ghostNodes[x][y] == None:
+            print("1 ")
+        else:
+            print("0 ")
+    print("")
+#580
+#560
+
+def placeDots():
+    global pellet_list
+    global pathScale
 
     x = 0
 
     while x < 580 / pathScale:
         y = 0
         while y < 560 / pathScale:
-            if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 1):
-                ghostNodes.append(Node(10+x*pathScale, 10+y*pathScale))
+            if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 0):
+                #add a coordinate for possible nodes
+                pellet_list.append(Pellet(10+x*pathScale, 10+y*pathScale, screen))
                 #pacDots[i].status = 0
                 #i += 1
             y += 1
         x += 1
+
+
+
+
+# #input the x and y position of ghostNodes[0]
+# def createEdges(x, y):
+#     global ghostNodes
+#     global pathScale
+#     #for i in range(prev + 1, len(ghostNode) -1):
+#
+#     node = Node(x, y)
+#
+#     if node.right == None:
+#         #position of where right node should be
+#         rightX = x + (10 + x * pathScale)
+#         rightY = y
+#
+#         for j in range(0, len(ghostNode) - 1)
+#             newX = ghostNodes[j][0]
+#             newY = ghostNodes[j][1]
+#             if newX == rightX and newY == rightY:
+#                 newNode = Node(newX, newY)
+#                 node.right = newNode
+#                 newNode.left = node
+#                 createEdges(newX, newY)
+
+
 
 placeDots()
 createGhostPath()
@@ -173,11 +225,15 @@ while running:
             #we only want to set packman to idle on keyup if no other key is being pressed
             #(sometimes a user can press a new direction without releasing the old key first)
             if not any(pygame.key.get_pressed()):
+                player.dirX = 0
+                player.dirY = 0
+
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     player.dirX = 0
 
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     player.dirY = 0
+
 
 
 
