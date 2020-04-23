@@ -10,7 +10,7 @@ from random import randint
 
 pygame.init()
 
-#window dimensions
+#window dimension
 w = 600
 h = 600
 frameCounter = 0
@@ -73,7 +73,7 @@ def draw():
         pygame.draw.rect(screen, (255, 0, 0), player.getHitbox())
         '''
 
-        drawText("Score: " + str(player.score), 20, 0, 0, False)
+        drawText("Score: " + str(player.score), 20, 250, 580, False)
 
 
 def drawText(text, size, x, y, center):
