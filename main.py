@@ -3,6 +3,7 @@ from player import Player
 from pellet import Pellet
 from pygame import image, Color
 from ghostNode import Node
+from ghost import Ghost
 
 # temp libraries
 from random import seed
@@ -25,6 +26,8 @@ pygame.display.set_caption("Game thing")
 #create player
 player = Player(w, h)
 
+
+
 #create pellet array
 pellet_list = []
 num_pellets = 50
@@ -38,8 +41,10 @@ for i in range(0, num_pellets):
 
 #---------------------------------------------------------------------------
 def update():
+    #print("in update")
     global player
     global frameCounter
+    global ghost
 
     #keeps track of how many frames the current animation has been played for
     frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
@@ -47,6 +52,9 @@ def update():
         player.changeFrame()
 
     player.move()
+    node = player.findNode(ghostNodes)
+    ghost.getPath(ghost.currentNode, ghost.currentNode, node)
+    ghost.move()
 
     for pellet in reversed(pellet_list):
         if pellet.checkCollision(player):
@@ -66,6 +74,9 @@ def draw():
 
         global player
         player.draw(screen)
+
+        global ghost
+        ghost.draw(screen)
 
         #for testing
         '''
@@ -118,7 +129,7 @@ def createGhostPath():
 
         while x < 580 / pathScale: #29
             if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 1):
-                ghostNodes[currY].append(Node(10+x*pathScale, 10+y*pathScale))
+                ghostNodes[currY].append(Node(10+x*pathScale, 10+y*pathScale, x, currY))
                 #pacDots[i].status = 0
                 #i += 1
             else:
@@ -130,8 +141,6 @@ def createGhostPath():
         y += 1
         currY += 1
         ghostNodes.append([])
-
-createGhostPath()
 
 
 # for row in ghostNodes:
@@ -190,6 +199,8 @@ def placeDots():
 
 placeDots()
 createGhostPath()
+#create ghost
+ghost = Ghost(8, 14, ghostNodes)
 #game loop
 running = True
 while running:

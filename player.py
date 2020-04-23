@@ -93,3 +93,15 @@ class Player:
         self.frame += 1
         if self.frame > len(self.imgs) -1:
             self.frame = 0
+
+    def findNode(self, nodes):
+
+        for row in nodes:
+            for val in row:
+                if val != 0:
+                    tolerance  = 30 * 30
+                    distSquaredX = (val.x - self.x)**2
+                    distSquaredY = (val.y - self.y)**2
+                    if distSquaredX < tolerance and distSquaredY < tolerance:
+                        #print(val.x)
+                        return val
