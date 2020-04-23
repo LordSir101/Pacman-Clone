@@ -24,6 +24,8 @@ class Player:
 
         self.x = width/2 - self.width/2 + 10
         self.y = height/2 - self.height/2
+        self.prevX = -1
+        self.prevY = -1
         self.vel = 2
         self.dirX = 0
         self.dirY = 0
@@ -34,6 +36,8 @@ class Player:
         movemap = image.load('movemap.png')
         colourmap = image.load('colourmap.png')
 
+        self.prevX = self.x
+        self.prevY = self.y
 
         #this is approximately where packman's sprite will collide with a wall
         nextX = self.x + self.dirX * self.vel + (self.width/3 * self.dirX)
@@ -58,6 +62,11 @@ class Player:
         elif self.y < 0 + self.height/2:
             self.y = 0  + self.height/2
 
+    def hasMoved(self):
+        if(self.x == self.prevX and self.y == self.prevY):
+            return False
+        else:
+            return True
 
     def draw(self, screen):
         #change state of pacman
