@@ -201,9 +201,12 @@ def placeDots():
 placeDots()
 createGhostPath()
 
+<<<<<<< HEAD
 #create ghost
 ghost = Ghost(8, 14, ghostNodes)
 
+=======
+>>>>>>> 55193aea7e067275b03cb9ad5285dbfbefc59a80
 #game loop
 running = True
 while running:
@@ -237,23 +240,19 @@ while running:
                 player.dirX = 0
 
         # we don't need to worry about keyups because pacman will always be moving and the user will pick which direction pacman moves
-        '''
+
         if event.type == pygame.KEYUP:
 
             if not any(pygame.key.get_pressed()):
                 player.dirX = 0
                 player.dirY = 0
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 55193aea7e067275b03cb9ad5285dbfbefc59a80
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     player.dirX = 0
 
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     player.dirY = 0
-        '''
 
 
 
