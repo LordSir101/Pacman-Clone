@@ -1,6 +1,7 @@
 import pygame
 from player import Player
 from pellet import Pellet
+from powerPellet import PowerPellet
 from pygame import image, Color
 from ghostNode import Node
 
@@ -43,7 +44,7 @@ def update():
 
     #keeps track of how many frames the current animation has been played for
     frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
-    if frameCounter > player.animationRate:
+    if frameCounter > player.animationRate and player.hasMoved():
         player.changeFrame()
 
     player.move()
@@ -136,6 +137,7 @@ def createGhostPath():
 
 placeDots()
 createGhostPath()
+
 #game loop
 running = True
 while running:
@@ -168,16 +170,21 @@ while running:
                 player.dirY = 1
                 player.dirX = 0
 
-
+        # we don't need to worry about keyups because pacman will always be moving and the user will pick which direction pacman moves
+        '''
         if event.type == pygame.KEYUP:
-            #we only want to set packman to idle on keyup if no other key is being pressed
-            #(sometimes a user can press a new direction without releasing the old key first)
+
             if not any(pygame.key.get_pressed()):
+                player.dirX = 0
+                player.dirY = 0
+
+
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     player.dirX = 0
 
                 if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                     player.dirY = 0
+        '''
 
 
 
