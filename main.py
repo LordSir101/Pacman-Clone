@@ -114,7 +114,7 @@ def createGhostPath():
 
     while y < 560 / pathScale:  #30
         x = 0
-        currX = 0
+        #currX = 0
 
         while x < 580 / pathScale: #29
             if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 1):
@@ -122,7 +122,7 @@ def createGhostPath():
                 #pacDots[i].status = 0
                 #i += 1
             else:
-                ghostNodes[currY].append(None)
+                ghostNodes[currY].append(0)
 
             #currX += 1
             x += 1
@@ -131,14 +131,16 @@ def createGhostPath():
         currY += 1
         ghostNodes.append([])
 
-print(ghostNodes[0][0])
-for y in range(len(ghostNodes)):
-    for x in range(len(ghostNodes[y])):
-        if ghostNodes[x][y] == None:
-            print("1 ")
-        else:
-            print("0 ")
-    print("")
+createGhostPath()
+
+
+# for row in ghostNodes:
+#     for val in row:
+#         if val == 0:
+#             print("0", end=' ')
+#         else:
+#             print("1", end=' ')
+#     print()
 #580
 #560
 
