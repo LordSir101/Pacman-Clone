@@ -34,11 +34,11 @@ pellet_list = []
 num_pellets = 50
 nodeList = [] #list of actual nodes
 
-'''
-for i in range(0, num_pellets):
+
+#for i in range(0, num_pellets):
     # append a new pellet object to the pellet_list[]
-    pellet_list.append(Pellet(randint(100, 700), randint(100, 500), screen))
-'''
+    #pellet_list.append(Pellet(randint(100, 700), randint(100, 500), screen))
+
 
 #---------------------------------------------------------------------------
 def update():
@@ -80,10 +80,10 @@ def draw():
         ghost.draw(screen)
 
         #for testing
-        '''
-        pygame.draw.circle(screen, (0, 255, 0), [int(player.x), int(player.y)], 1)
-        pygame.draw.rect(screen, (255, 0, 0), player.getHitbox())
-        '''
+
+        #pygame.draw.circle(screen, (0, 255, 0), [int(player.x), int(player.y)], 1)
+        #pygame.draw.rect(screen, (255, 0, 0), player.getHitbox())
+
 
         drawText("Score: " + str(player.score), 20, 0, 0, False)
 
@@ -201,12 +201,10 @@ def placeDots():
 placeDots()
 createGhostPath()
 
-<<<<<<< HEAD
+
 #create ghost
 ghost = Ghost(8, 14, ghostNodes)
 
-=======
->>>>>>> 55193aea7e067275b03cb9ad5285dbfbefc59a80
 #game loop
 running = True
 while running:
