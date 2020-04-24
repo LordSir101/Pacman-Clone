@@ -18,6 +18,7 @@ h = 600
 frameCounter = 0
 gameStarted = False
 
+
 #create screen
 screen = pygame.display.set_mode((w, h))
 
@@ -26,6 +27,7 @@ pygame.display.set_caption("Game thing")
 
 #create player
 player = Player(w, h)
+
 
 
 
@@ -39,6 +41,20 @@ nodeList = [] #list of actual nodes
     # append a new pellet object to the pellet_list[]
     #pellet_list.append(Pellet(randint(100, 700), randint(100, 500), screen))
 
+def getPath():
+    node = player.findNode(ghostNodes)
+    ghost.bestPath = []
+    ghost.getPath(ghost.currentNode, ghost.currentNode, node)
+    ghost.shortestSize = 9223372036854775807
+    ghost.testPath = []
+
+    #node = None
+    for row in ghostNodes:
+        for val in row:
+            if val == 0:
+                pass
+            else:
+                val.status = 0
 
 #---------------------------------------------------------------------------
 def update():
@@ -46,6 +62,7 @@ def update():
     global player
     global frameCounter
     global ghost
+    global prevNode
 
     #keeps track of how many frames the current animation has been played for
     frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
@@ -53,9 +70,10 @@ def update():
         player.changeFrame()
 
     player.move()
-    node = player.findNode(ghostNodes)
-    ghost.getPath(ghost.currentNode, ghost.currentNode, node)
-    ghost.move()
+
+    #node = player.findNode(ghostNodes)
+    #ghost.getPath(ghost.currentNode, ghost.currentNode, node)
+    ghost.move(player)
 
     for pellet in reversed(pellet_list):
         if pellet.checkCollision(player):
@@ -116,7 +134,7 @@ def checkDotPoint(x,y, image):
 pathScale = 20
 #ghostNodes = [[0 for x in range(int(10+(580/pathScale)*pathScale))] for y in range(int(10 + (560/pathScale)*pathScale))]
 ghostNodes = []
-ghostNodes.append([])
+#ghostNodes.append([])
 def createGhostPath():
     global ghostNodes
     global screen
@@ -125,6 +143,7 @@ def createGhostPath():
     currY = 0
 
     while y < 560 / pathScale:  #30
+        ghostNodes.append([])
         x = 0
         #currX = 0
 
@@ -141,7 +160,7 @@ def createGhostPath():
 
         y += 1
         currY += 1
-        ghostNodes.append([])
+
 
 
 # for row in ghostNodes:
@@ -204,6 +223,8 @@ createGhostPath()
 
 #create ghost
 ghost = Ghost(8, 14, ghostNodes)
+prevNode = player.findNode(ghostNodes)
+
 
 #game loop
 running = True
@@ -218,24 +239,34 @@ while running:
         #key event handler-------------------------
         if event.type == pygame.KEYDOWN:
 
+
+            if event.key == pygame.K_p:
+                getPath()
             if gameStarted == False:
                 gameStarted = True
+
+            #if event.key == pygame.K_SPACE:
 
             if event.key == pygame.K_LEFT:
                 player.dirX = -1
                 player.dirY = 0 #set to 0 in case user presses an arrow while holding down another arrow
+                #getPath()
+
 
             if event.key == pygame.K_RIGHT:
                 player.dirX = 1
                 player.dirY = 0
+                #getPath()
 
             if event.key == pygame.K_UP:
                 player.dirY = -1
                 player.dirX = 0
+                #getPath()
 
             if event.key == pygame.K_DOWN:
                 player.dirY = 1
                 player.dirX = 0
+                #getPath()
 
         # we don't need to worry about keyups because pacman will always be moving and the user will pick which direction pacman moves
 

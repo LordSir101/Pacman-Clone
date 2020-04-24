@@ -20,17 +20,19 @@ class Ghost:
         self.dirY = 0
         self.vel = 0
 
-    def move(self):
+    def move(self, player):
         #print(len(self.bestPath))
         self.placeOnPath +=1
         if self.placeOnPath < len(self.bestPath):
             self.x = self.bestPath[self.placeOnPath].x
             self.y = self.bestPath[self.placeOnPath].y
             self.currentNode = self.bestPath[self.placeOnPath]
+            
         #getPath()
 
     #start and root are the same node initially
     #root is the originonal start, start is the recusive start
+
     def getPath(self, start, root, target):
 
         self.placeOnPath = 0
@@ -44,6 +46,9 @@ class Ghost:
 
         prevX = start.idX
         prevY = start.idY
+        #print("start" + str(start.x) + " " + str(start.y))
+        print("target" + str(target.x) + " " + str(target.y))
+
 
         #print(str(prevX) + " " + str(prevY))
 
@@ -58,10 +63,10 @@ class Ghost:
                 self.bestPath = self.testPath.copy()
 
             #undiscover target node
-            #target.status = 0
+            target.status = 0
 
             #remove goal from current path so we can check other paths from the previous node
-            #self.testPath.pop()
+            self.testPath.pop()
             endOfPath = True
 
         if not endOfPath:
@@ -76,6 +81,7 @@ class Ghost:
 
                         new = self.nodes[nextY][nextX]
                         self.getPath(new, parent, target)
+                        #new.status = 0
 
 
             #LEFT
@@ -87,8 +93,8 @@ class Ghost:
                     if self.nodes[nextY][nextX] != 0 and self.nodes[nextY][nextX].status == 0:
                         #print("left")
                         new = self.nodes[nextY][nextX]
-
                         self.getPath(new, parent, target)
+                        #new.status = 0
 
 
             #UP
@@ -100,8 +106,8 @@ class Ghost:
                     if self.nodes[nextY][nextX] != 0 and self.nodes[nextY][nextX].status == 0:
                         #print("up")
                         new = self.nodes[nextY][nextX]
-
                         self.getPath(new, parent, target)
+                        #new.status = 0
 
 
             #DOWN
@@ -113,8 +119,8 @@ class Ghost:
                     if self.nodes[nextY][nextX] != 0 and self.nodes[nextY][nextX].status == 0:
                         #print("down")
                         new = self.nodes[nextY][nextX]
-
                         self.getPath(new, parent, target)
+                        #new.status = 0
 
 
             #after checking neighbors, remove from currentPath
