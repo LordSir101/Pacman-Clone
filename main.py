@@ -54,9 +54,8 @@ ghostNodes = []
 def getPath():
     node = player.findNode(ghostNodes)
     ghost.bestPath = []
-    ghost.getPath(ghost.currentNode, ghost.currentNode, node)
+    ghost.getPath(ghost.currentNode, node)
     ghost.shortestSize = 9223372036854775807
-    ghost.testPath = []
 
     #node = None
     for row in ghostNodes:
@@ -68,7 +67,6 @@ def getPath():
 
 #---------------------------------------------------------------------------
 def update():
-    #print("in update")
     global player
     global frameCounter
     global ghost
@@ -83,6 +81,7 @@ def update():
 
     #node = player.findNode(ghostNodes)
     #ghost.getPath(ghost.currentNode, ghost.currentNode, node)
+    getPath()
     ghost.move(player)
 
     for pellet in reversed(pellet_list):
@@ -122,6 +121,7 @@ def draw():
 
 
         drawText("Score: " + str(player.score), 20, 0, 0, False)
+        
 
 
 def drawText(text, size, x, y, center):
@@ -157,6 +157,7 @@ ghostNodes = []
 def createGhostPath():
     global ghostNodes
     global screen
+    global pathScale
 
     y = 0
     currY = 0
@@ -213,16 +214,16 @@ def doesPowerPelletExistHere(x, y):
 
 
 
-# for row in ghostNodes:
-#     for val in row:
-#         if val == 0:
-#             print("0", end=' ')
-#         else:
-#             print("1", end=' ')
-#     print()
+    for row in ghostNodes:
+        for val in row:
+            if val == 0:
+                print("0", end=' ')
+            else:
+                print("1", end=' ')
+        print()
 #580
 #560
-
+pathScale = 20
 def placeDots():
     global pellet_list
     global pathScale
@@ -247,32 +248,6 @@ def placeDots():
 
 <<<<<<< HEAD
 
-
-
-# #input the x and y position of ghostNodes[0]
-# def createEdges(x, y):
-#     global ghostNodes
-#     global pathScale
-#     #for i in range(prev + 1, len(ghostNode) -1):
-#
-#     node = Node(x, y)
-#
-#     if node.right == None:
-#         #position of where right node should be
-#         rightX = x + (10 + x * pathScale)
-#         rightY = y
-#
-#         for j in range(0, len(ghostNode) - 1)
-#             newX = ghostNodes[j][0]
-#             newY = ghostNodes[j][1]
-#             if newX == rightX and newY == rightY:
-#                 newNode = Node(newX, newY)
-#                 node.right = newNode
-#                 newNode.left = node
-#                 createEdges(newX, newY)
-
-
-
 placeDots()
 =======
 placePowerPellets()
@@ -283,6 +258,7 @@ createGhostPath()
 
 #create ghost
 ghost = Ghost(8, 14, ghostNodes)
+#ghost.setDirection()
 prevNode = player.findNode(ghostNodes)
 
 
@@ -329,21 +305,6 @@ while running:
                 #getPath()
 
         # we don't need to worry about keyups because pacman will always be moving and the user will pick which direction pacman moves
-
-        if event.type == pygame.KEYUP:
-
-            if not any(pygame.key.get_pressed()):
-                player.dirX = 0
-                player.dirY = 0
-
-
-                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-                    player.dirX = 0
-
-                if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                    player.dirY = 0
-
-
 
 
     update()
