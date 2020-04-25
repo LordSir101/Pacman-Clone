@@ -103,6 +103,7 @@ def draw():
 
         global ghost
         ghost.draw(screen)
+        drawText("Score: " + str(player.score), 20, 0, 580, False)
 
 
 
