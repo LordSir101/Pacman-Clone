@@ -82,12 +82,14 @@ def update():
             powerPellet_list.remove(powerPellet)
             player.score += powerPellet.point_value
 
+
 #---------------------------------------------------------------------------
 def draw():
     if gameStarted == False:
         #text, size, xpos, ypos, center text at point
         drawText("Click Any Button To Play", 45, w/2, h/2, True)
     else:
+        pygame.draw.rect(screen,(0, 0, 0),(0, 0, w, h))
         #background
         screen.blit(pygame.image.load('colourmap.png'), (0,0))
         for pellet in pellet_list:
@@ -102,7 +104,6 @@ def draw():
         global ghost
         ghost.draw(screen)
 
-        drawText("Score: " + str(player.score), 20, 0, 0, False)
 
 
 def drawText(text, size, x, y, center):
