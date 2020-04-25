@@ -16,6 +16,7 @@ pygame.init()
 w = 600
 h = 600
 frameCounter = 0
+time = 0
 gameStarted = False
 
 
@@ -40,18 +41,19 @@ ghostNodes = []
 
 #have the ghost get the path to its target
 def getPath():
-    node = player.findNode(ghostNodes)
-    ghost.bestPath = []
-    ghost.getPath(ghost.currentNode, node)
-    ghost.shortestSize = 9223372036854775807
+    if player.hasMoved():
+        node = player.findNode(ghostNodes)
+        ghost.bestPath = []
+        ghost.getPath(ghost.currentNode, node)
+        ghost.shortestSize = 9223372036854775807
 
-    #reset all nodes to discoverable
-    for row in ghostNodes:
-        for val in row:
-            if val == 0:
-                pass
-            else:
-                val.status = 0
+        #reset all nodes to discoverable
+        for row in ghostNodes:
+            for val in row:
+                if val == 0:
+                    pass
+                else:
+                    val.status = 0
 
 #---------------------------------------------------------------------------
 def update():
@@ -60,6 +62,9 @@ def update():
     global frameCounter
     global ghost
     global prevNode
+    global time
+
+    checkTime = 30
 
     #keeps track of how many frames the current animation has been played for
     frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
