@@ -27,60 +27,45 @@ class Ghost:
         #print(len(self.bestPath))
         #when the ghost reaches a node in its path, move to the next node
         if self.placeOnPath < len(self.bestPath):
-            tolerance  = self.alpha * self.alpha
+            tolerance  = self.alpha * self.alpha #how close a ghost has to be to a node to considere it "reached"
             distSquaredX = (self.x - self.bestPath[self.placeOnPath].x)**2
             distSquaredY = (self.y - self.bestPath[self.placeOnPath].y)**2
+
             if distSquaredX < tolerance and distSquaredY < tolerance:
-            #when the ghost reaches a node in its path, move to the next node
+                #when the ghost reaches a node in its path, move to the next node
                 self.placeOnPath +=1
                 self.setDirection()
 
             #move the ghost
             if self.placeOnPath < len(self.bestPath):
                 self.currentNode = self.bestPath[self.placeOnPath]
-                self.lerp(self.alpha)
+                self.lerp(self.alpha) #smooth the movement petween two points
+            #if there is no path for some reason, stay still
             else:
                 self.dirX = 0
                 self.dirY = 0
 
-
-        #if self.placeOnPath < len(self.bestPath):
-            #self.x = self.bestPath[self.placeOnPath].x
-            #self.y = self.bestPath[self.placeOnPath].y
-            #self.currentNode = self.bestPath[self.placeOnPath]
-
     def setDirection(self):
         if self.placeOnPath < len(self.bestPath):
+            #divide distance by magnitude of distance to get direction of next point
             distX = self.bestPath[self.placeOnPath].x - self.currentNode.x
             distY = self.bestPath[self.placeOnPath].y - self.currentNode.y
 
             magX = abs(distX)
             magY = abs(distY)
 
+            #if the magnitude is 0 this means that the ghost is on the same axis as the point
+            #therefore we do not move in that direction
             self.dirX = distX / magX if magX != 0 else 0
             self.dirY = distY / magY if magY != 0 else 0
-        #getPath()
-    # def setVelocity():
-    #     #get distance between two nodes
-    #     #use current node and the node to the right
-    #     right = self.nodes[self.currentNode.idY][self.currentNode.idX + 1]
-    #     dist = math.hypot(right.x-self.currentNode.x, right.y-self.currentNode.y)
-    #     self.vel = dist / 100
 
     def lerp(self, alpha):
-
         self.x += self.vel * self.dirX
         self.y += self.vel * self.dirY
-        #self.x += alpha * (self.bestPath[self.placeOnPath].x - self.x)
-        #self.y += alpha * (self.bestPath[self.placeOnPath].y - self.y)
 
-        #if self.x > self.bestPath[self.placeOnPath].x:
-            #self.x = self.bestPath[self.placeOnPath].x
-        #if self.y > self.bestPath[self.placeOnPath].y
 
     #start and root are the same node initially
     #root is the originonal start, start is the recusive start
-
     def getPath(self, start, target):
 
         self.placeOnPath = 0
@@ -93,18 +78,12 @@ class Ghost:
 
         prevX = start.idX
         prevY = start.idY
-        #print("start" + str(start.x) + " " + str(start.y))
-        #print("target" + str(target.x) + " " + str(target.y))
-
-        #print(str(prevX) + " " + str(prevY))
 
         #check if current is the target node
         if start.x == target.x and start.y == target.y:
             #check if this is the shortest path
             if len(self.testPath) < self.shortestSize:
                 self.shortestSize = len(self.testPath)
-
-                    #print(str(val.x) + " " + str(val.y), end=' ' )
                 self.bestPath = self.testPath.copy()
 
             #undiscover target node
@@ -176,7 +155,6 @@ class Ghost:
                         lookingForClosestNeighbor = False
 
             #after checking neighbors, remove from currentPath
-            #start.status = 0
             self.testPath.remove(start)
 
     def gotoNode(self, node, target):

@@ -28,36 +28,24 @@ pygame.display.set_caption("Game thing")
 #create player
 player = Player(w, h)
 
-
-
-
 #create pellet array
 pellet_list = []
 num_pellets = 50
-<<<<<<< HEAD
 nodeList = [] #list of actual nodes
-
-=======
-
 #create powerPellet array
-
 powerPellet_list = []
 
 #create ghostNodes array
 ghostNodes = []
->>>>>>> 422b3fd157a32ae7fe181d32a7a6c4c794d0ab06
 
-#for i in range(0, num_pellets):
-    # append a new pellet object to the pellet_list[]
-    #pellet_list.append(Pellet(randint(100, 700), randint(100, 500), screen))
-
+#have the ghost get the path to its target
 def getPath():
     node = player.findNode(ghostNodes)
     ghost.bestPath = []
     ghost.getPath(ghost.currentNode, node)
     ghost.shortestSize = 9223372036854775807
 
-    #node = None
+    #reset all nodes to discoverable
     for row in ghostNodes:
         for val in row:
             if val == 0:
@@ -67,6 +55,7 @@ def getPath():
 
 #---------------------------------------------------------------------------
 def update():
+
     global player
     global frameCounter
     global ghost
@@ -79,11 +68,10 @@ def update():
 
     player.move()
 
-    #node = player.findNode(ghostNodes)
-    #ghost.getPath(ghost.currentNode, ghost.currentNode, node)
     getPath()
     ghost.move(player)
 
+    #draw pellets and power pellets
     for pellet in reversed(pellet_list):
         if pellet.checkCollision(player):
             pellet_list.remove(pellet)
@@ -114,14 +102,7 @@ def draw():
         global ghost
         ghost.draw(screen)
 
-        #for testing
-
-        #pygame.draw.circle(screen, (0, 255, 0), [int(player.x), int(player.y)], 1)
-        #pygame.draw.rect(screen, (255, 0, 0), player.getHitbox())
-
-
         drawText("Score: " + str(player.score), 20, 0, 0, False)
-        
 
 
 def drawText(text, size, x, y, center):
@@ -136,7 +117,7 @@ def drawText(text, size, x, y, center):
     else:
         screen.blit(overText, (x, y))
 
-
+#create ghost path and place dots on map-----------------------------------------------------------------------
 dotimage = image.load('pacmandotmap.png')
 pathImage = image.load('movemap.png')
 def checkDotPoint(x, y, image):
@@ -148,46 +129,42 @@ def checkDotPoint(x, y, image):
         return True
     return False
 
-<<<<<<< HEAD
-
-pathScale = 20
-#ghostNodes = [[0 for x in range(int(10+(580/pathScale)*pathScale))] for y in range(int(10 + (560/pathScale)*pathScale))]
+pathScale = 20 #how far apart the nodes/dots are
 ghostNodes = []
-#ghostNodes.append([])
+#this is the possible nodes that a ghost can travel to
 def createGhostPath():
     global ghostNodes
     global screen
-    global pathScale
 
     y = 0
     currY = 0
 
-    while y < 560 / pathScale:  #30
+    while y < 560 / pathScale:
         ghostNodes.append([])
         x = 0
-        #currX = 0
 
-        while x < 580 / pathScale: #29
+        while x < 580 / pathScale:
             if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 1):
                 ghostNodes[currY].append(Node(10+x*pathScale, 10+y*pathScale, x, currY))
-                #pacDots[i].status = 0
-                #i += 1
+
             else:
                 ghostNodes[currY].append(0)
 
-            #currX += 1
             x += 1
-=======
+        y += 1
+        currY += 1
+
 def placePellets():
     global pellet_list
     global screen
+    global pathScale
 
     x = 0
-    while x < 30:  #30
+    while x < 580 / pathScale:
         y = 0
-        while y < 29: #29
-            currX = 10 + (x*20)
-            currY = 10 + (y*20)
+        while y < 550 / pathScale:
+            currX = 10 + (x*pathScale)
+            currY = 10 + (y*pathScale)
             if checkDotPoint(currX, currY, 0) and not doesPowerPelletExistHere(currX, currY):
                 pellet_list.append(Pellet(currX, currY, screen))
             y += 1
@@ -207,59 +184,22 @@ def doesPowerPelletExistHere(x, y):
         if powerPellet.x == x and powerPellet.y == y:
             return True
     return False
->>>>>>> 422b3fd157a32ae7fe181d32a7a6c4c794d0ab06
-
-        y += 1
-        currY += 1
 
 
+# for row in ghostNodes:
+#     for val in row:
+#         if val == 0:
+#             print("0", end=' ')
+#         else:
+#             print("1", end=' ')
+#     print()
 
-    for row in ghostNodes:
-        for val in row:
-            if val == 0:
-                print("0", end=' ')
-            else:
-                print("1", end=' ')
-        print()
-#580
-#560
-pathScale = 20
-def placeDots():
-    global pellet_list
-    global pathScale
-
-    x = 0
-
-    while x < 580 / pathScale:
-        y = 0
-        while y < 560 / pathScale:
-<<<<<<< HEAD
-            if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 0):
-                #add a coordinate for possible nodes
-                pellet_list.append(Pellet(10+x*pathScale, 10+y*pathScale, screen))
-=======
-            if checkDotPoint(10 + (x*pathScale), 10 + (y*pathScale), 1):
-                ghostNodes.append(Node(10 + (x*pathScale), 10 + (y*pathScale)))
->>>>>>> 422b3fd157a32ae7fe181d32a7a6c4c794d0ab06
-                #pacDots[i].status = 0
-                #i += 1
-            y += 1
-        x += 1
-
-<<<<<<< HEAD
-
-placeDots()
-=======
 placePowerPellets()
 placePellets()
->>>>>>> 422b3fd157a32ae7fe181d32a7a6c4c794d0ab06
 createGhostPath()
-
 
 #create ghost
 ghost = Ghost(8, 14, ghostNodes)
-#ghost.setDirection()
-prevNode = player.findNode(ghostNodes)
 
 
 #game loop
@@ -275,13 +215,8 @@ while running:
         #key event handler-------------------------
         if event.type == pygame.KEYDOWN:
 
-
-            if event.key == pygame.K_p:
-                getPath()
             if gameStarted == False:
                 gameStarted = True
-
-            #if event.key == pygame.K_SPACE:
 
             if event.key == pygame.K_LEFT:
                 player.dirX = -1
