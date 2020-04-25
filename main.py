@@ -34,8 +34,18 @@ player = Player(w, h)
 #create pellet array
 pellet_list = []
 num_pellets = 50
+<<<<<<< HEAD
 nodeList = [] #list of actual nodes
 
+=======
+
+#create powerPellet array
+
+powerPellet_list = []
+
+#create ghostNodes array
+ghostNodes = []
+>>>>>>> 422b3fd157a32ae7fe181d32a7a6c4c794d0ab06
 
 #for i in range(0, num_pellets):
     # append a new pellet object to the pellet_list[]
@@ -78,7 +88,12 @@ def update():
     for pellet in reversed(pellet_list):
         if pellet.checkCollision(player):
             pellet_list.remove(pellet)
-            player.score += 10
+            player.score += pellet.point_value
+
+    for powerPellet in reversed(powerPellet_list):
+        if powerPellet.checkCollision(player):
+            powerPellet_list.remove(powerPellet)
+            player.score += powerPellet.point_value
 
 #---------------------------------------------------------------------------
 def draw():
@@ -90,6 +105,9 @@ def draw():
         screen.blit(pygame.image.load('colourmap.png'), (0,0))
         for pellet in pellet_list:
             pellet.draw()
+
+        for powerPellet in powerPellet_list:
+            powerPellet.draw()
 
         global player
         player.draw(screen)
@@ -114,14 +132,14 @@ def drawText(text, size, x, y, center):
 
     if center:
         #centers the text at the specified point
-        screen.blit(overText, (x - textW/2, y - textH/2))
+        screen.blit(overText, (int(x - textW/2), int(y - textH/2)))
     else:
         screen.blit(overText, (x, y))
 
 
 dotimage = image.load('pacmandotmap.png')
 pathImage = image.load('movemap.png')
-def checkDotPoint(x,y, image):
+def checkDotPoint(x, y, image):
     global dotimage
     global pathImage
 
@@ -130,6 +148,7 @@ def checkDotPoint(x,y, image):
         return True
     return False
 
+<<<<<<< HEAD
 
 pathScale = 20
 #ghostNodes = [[0 for x in range(int(10+(580/pathScale)*pathScale))] for y in range(int(10 + (560/pathScale)*pathScale))]
@@ -157,6 +176,37 @@ def createGhostPath():
 
             #currX += 1
             x += 1
+=======
+def placePellets():
+    global pellet_list
+    global screen
+
+    x = 0
+    while x < 30:  #30
+        y = 0
+        while y < 29: #29
+            currX = 10 + (x*20)
+            currY = 10 + (y*20)
+            if checkDotPoint(currX, currY, 0) and not doesPowerPelletExistHere(currX, currY):
+                pellet_list.append(Pellet(currX, currY, screen))
+            y += 1
+        x += 1
+
+def placePowerPellets():
+    global powerPellet_list
+    global screen
+
+    powerPellet_list.append(PowerPellet(30, 70, screen))
+    powerPellet_list.append(PowerPellet(570, 70, screen))
+    powerPellet_list.append(PowerPellet(30, 490, screen))
+    powerPellet_list.append(PowerPellet(570, 490, screen))
+
+def doesPowerPelletExistHere(x, y):
+    for powerPellet in powerPellet_list:
+        if powerPellet.x == x and powerPellet.y == y:
+            return True
+    return False
+>>>>>>> 422b3fd157a32ae7fe181d32a7a6c4c794d0ab06
 
         y += 1
         currY += 1
@@ -182,14 +232,20 @@ def placeDots():
     while x < 580 / pathScale:
         y = 0
         while y < 560 / pathScale:
+<<<<<<< HEAD
             if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 0):
                 #add a coordinate for possible nodes
                 pellet_list.append(Pellet(10+x*pathScale, 10+y*pathScale, screen))
+=======
+            if checkDotPoint(10 + (x*pathScale), 10 + (y*pathScale), 1):
+                ghostNodes.append(Node(10 + (x*pathScale), 10 + (y*pathScale)))
+>>>>>>> 422b3fd157a32ae7fe181d32a7a6c4c794d0ab06
                 #pacDots[i].status = 0
                 #i += 1
             y += 1
         x += 1
 
+<<<<<<< HEAD
 
 
 
@@ -218,6 +274,10 @@ def placeDots():
 
 
 placeDots()
+=======
+placePowerPellets()
+placePellets()
+>>>>>>> 422b3fd157a32ae7fe181d32a7a6c4c794d0ab06
 createGhostPath()
 
 

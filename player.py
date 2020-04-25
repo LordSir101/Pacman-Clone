@@ -7,7 +7,7 @@ class Player:
         self.scrnH = height
 
         #images for pacman animation
-        self.folder = "pacman_animation/"
+        self.folder = "animations/pacman_move/"
         self.imgs = [pygame.image.load(self.folder+"pacman1.png"),
                     pygame.image.load(self.folder+"pacman2.png"),
                     pygame.image.load(self.folder+"pacman3.png"),
