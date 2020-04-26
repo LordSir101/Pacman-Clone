@@ -6,13 +6,13 @@ class Ghost:
     def __init__(self, x, y, ghostPath):
         #start at 14 10
         self.nodes = ghostPath
-        self.bestPath = []
+        #a path to help the ghost leave home
+        self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14] ] #
         self.testPath = []
         self.placeOnPath = 1
         self.shortestSize = 9223372036854775807
         self.currentNode = self.nodes[y][x]  #ypos #xpos
-        #self.prevX = x
-        #self.prevY = y
+
         self.x = self.currentNode.x
         self.y = self.currentNode.y
 
@@ -20,14 +20,16 @@ class Ghost:
         self.dirY = 0
         self.vel = 2
         self.alpha = 0.3 #how smooth the move animation is
+        self.isLeaving = True
 
         self.setDirection()
 
     def move(self, player):
         #print(len(self.bestPath))
+
         #when the ghost reaches a node in its path, move to the next node
         if self.placeOnPath < len(self.bestPath):
-            tolerance  = self.alpha * self.alpha #how close a ghost has to be to a node to considere it "reached"
+            tolerance  = self.alpha * self.alpha #how close a ghost has to be to a node to consider it "reached"
             distSquaredX = (self.x - self.bestPath[self.placeOnPath].x)**2
             distSquaredY = (self.y - self.bestPath[self.placeOnPath].y)**2
 
@@ -39,11 +41,16 @@ class Ghost:
             #move the ghost
             if self.placeOnPath < len(self.bestPath):
                 self.currentNode = self.bestPath[self.placeOnPath]
-                self.lerp(self.alpha) #smooth the movement petween two points
+                self.lerp(self.alpha) #smooth the movement between two points
             #if there is no path for some reason, stay still
             else:
                 self.dirX = 0
                 self.dirY = 0
+        if self.placeOnPath == len(self.bestPath):
+            self.isLeaving = False
+            #close the entrance to home so the ghost cant go back in
+            self.nodes[12][14] = 0
+            self.nodes[12][15] = 0
 
     def setDirection(self):
         if self.placeOnPath < len(self.bestPath):

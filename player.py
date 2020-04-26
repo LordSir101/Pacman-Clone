@@ -24,7 +24,7 @@ class Player:
         self.height = self.sprite.get_height()
 
         self.x = width/2 - self.width/2 + 10
-        self.y = height/2 - self.height/2
+        self.y = height/2 - self.height/2 + 60
         self.prevX = -1
         self.prevY = -1
         self.vel = 2.5

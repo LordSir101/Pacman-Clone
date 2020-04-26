@@ -19,6 +19,7 @@ h = 600
 frameCounter = 0
 time = 0
 gameStarted = False
+firstMove = False
 
 
 #create screen
@@ -45,7 +46,8 @@ tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
 #have the ghost get the path to its target
 def getPath():
-    if player.hasMoved():
+    #we want the ghost to take the starting path until it has left home
+    if player.hasMoved() and not ghost.isLeaving:
         node = player.findNode(ghostNodes)
         ghost.bestPath = []
         ghost.getPath(ghost.currentNode, node)
@@ -67,6 +69,7 @@ def update():
     global ghost
     global prevNode
     global time
+    global firstMove
 
     checkTime = 30
 
@@ -76,10 +79,16 @@ def update():
         player.changeFrame()
 
     player.move()
-    tunnel.teleportPlayer(player)
 
-    getPath()
-    ghost.move(player)
+    #tells us when the player has started moving pacman
+    if player.hasMoved():
+        firstMove = True
+
+    #only start moving the ghost if the player has made an input
+    if firstMove == True:
+        tunnel.teleportPlayer(player)
+        getPath()
+        ghost.move(player)
 
     #draw pellets and power pellets
     for pellet in reversed(pellet_list):
@@ -170,6 +179,14 @@ def createGhostPath():
         y += 1
         currY += 1
 
+    for row in ghostNodes:
+        for val in row:
+            if val == 0:
+                print("0", end=' ')
+            else:
+                print("1", end=' ')
+        print()
+
 def placePellets():
     global pellet_list
     global screen
@@ -185,6 +202,8 @@ def placePellets():
                 pellet_list.append(Pellet(targetX, targetY, screen))
             y += 1
         x += 1
+
+
 
 def placePowerPellets():
     global powerPellet_list
@@ -202,20 +221,14 @@ def doesPowerPelletExistHere(x, y):
     return False
 
 
-# for row in ghostNodes:
-#     for val in row:
-#         if val == 0:
-#             print("0", end=' ')
-#         else:
-#             print("1", end=' ')
-#     print()
+
 
 placePowerPellets()
 placePellets()
 createGhostPath()
 
 #create ghost
-ghost = Ghost(8, 14, ghostNodes)
+ghost = Ghost(14, 14, ghostNodes)
 
 
 #game loop
