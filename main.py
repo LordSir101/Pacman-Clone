@@ -5,6 +5,7 @@ from powerPellet import PowerPellet
 from pygame import image, Color
 from ghostNode import Node
 from ghost import Ghost
+from tunnel import Tunnel
 
 # temp libraries
 from random import seed
@@ -39,6 +40,9 @@ powerPellet_list = []
 #create ghostNodes array
 ghostNodes = []
 
+# create two way tunnel
+tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
+
 #have the ghost get the path to its target
 def getPath():
     if player.hasMoved():
@@ -72,6 +76,7 @@ def update():
         player.changeFrame()
 
     player.move()
+    tunnel.teleportPlayer(player)
 
     getPath()
     ghost.move(player)
@@ -127,6 +132,7 @@ def drawText(text, size, x, y, center):
 #create ghost path and place dots on map-----------------------------------------------------------------------
 dotimage = image.load('pacmandotmap.png')
 pathImage = image.load('movemap.png')
+
 def checkDotPoint(x, y, image):
     global dotimage
     global pathImage
@@ -136,9 +142,9 @@ def checkDotPoint(x, y, image):
         return True
     return False
 
-pathScale = 20 #how far apart the nodes/dots are
-ghostNodes = []
-#this is the possible nodes that a ghost can travel to
+pathScale = 20  # controls how far apart the nodes/dots are
+ghostNodes = [] # this is the possible nodes that a ghost can travel to
+
 def createGhostPath():
     global ghostNodes
     global screen
@@ -151,8 +157,11 @@ def createGhostPath():
         x = 0
 
         while x < 580 / pathScale:
-            if checkDotPoint(10+x*pathScale, 10 + y*pathScale, 1):
-                ghostNodes[currY].append(Node(10+x*pathScale, 10+y*pathScale, x, currY))
+            targetX = 10 + (x*pathScale)
+            targetY = 10 + (y*pathScale)
+
+            if checkDotPoint(targetX, targetY, 1):
+                ghostNodes[currY].append(Node(targetX, targetY, x, currY))
 
             else:
                 ghostNodes[currY].append(0)
@@ -170,10 +179,10 @@ def placePellets():
     while x < 580 / pathScale:
         y = 0
         while y < 550 / pathScale:
-            currX = 10 + (x*pathScale)
-            currY = 10 + (y*pathScale)
-            if checkDotPoint(currX, currY, 0) and not doesPowerPelletExistHere(currX, currY):
-                pellet_list.append(Pellet(currX, currY, screen))
+            targetX = 10 + (x*pathScale)
+            targetY = 10 + (y*pathScale)
+            if checkDotPoint(targetX, targetY, 0) and not doesPowerPelletExistHere(targetX, targetY):
+                pellet_list.append(Pellet(targetX, targetY, screen))
             y += 1
         x += 1
 
@@ -230,7 +239,6 @@ while running:
                 player.dirY = 0 #set to 0 in case user presses an arrow while holding down another arrow
                 #getPath()
 
-
             if event.key == pygame.K_RIGHT:
                 player.dirX = 1
                 player.dirY = 0
@@ -245,9 +253,6 @@ while running:
                 player.dirY = 1
                 player.dirX = 0
                 #getPath()
-
-        # we don't need to worry about keyups because pacman will always be moving and the user will pick which direction pacman moves
-
 
     update()
     draw()
