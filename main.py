@@ -13,37 +13,41 @@ from random import randint
 
 pygame.init()
 
-#window dimensions
+# window dimensions
 w = 600
 h = 600
 frameCounter = 0
+frameCounter2 = 0
 time = 0
 gameStarted = False
 
 
-#create screen
+# create screen
 screen = pygame.display.set_mode((w, h))
 
-#title and icon
+# title and icon
 pygame.display.set_caption("Game thing")
 
-#create player
+# create player
 player = Player(w, h)
 
-#create pellet array
+# create pellet array
 pellet_list = []
 num_pellets = 50
-nodeList = [] #list of actual nodes
-#create powerPellet array
+
+# list of actual nodes
+nodeList = []
+
+# create powerPellet array
 powerPellet_list = []
 
-#create ghostNodes array
+# create ghostNodes array
 ghostNodes = []
 
 # create two way tunnel
 tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
-#have the ghost get the path to its target
+# have the ghost get the path to its target
 def getPath():
     if player.hasMoved():
         node = player.findNode(ghostNodes)
@@ -64,31 +68,40 @@ def update():
 
     global player
     global frameCounter
+    global frameCounter2
     global ghost
     global prevNode
     global time
 
-    checkTime = 30
+    # keeps track of how many frames the current animation has been played for
+    frameCounter = (frameCounter + 1) % 100
+    if frameCounter % (player.animationRate + 1) == 0 and player.hasMoved():
+        # change the player.frame_alive every 6 frames
+        player.frame_alive = (player.frame_alive + 1) % len(player.imgs_alive)
 
-    #keeps track of how many frames the current animation has been played for
-    frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
-    if frameCounter > player.animationRate and player.hasMoved():
-        player.changeFrame()
+    if frameCounter % ((player.animationRate-1) + 1) == 0:
+        player.frame_dead = (player.frame_dead + 1) % len(player.imgs_dead)
 
-    player.move()
-    tunnel.teleportPlayer(player)
+    if player.isLiving == True:
+        player.move()
+        tunnel.teleportPlayer(player)
 
-    getPath()
-    ghost.move(player)
+        getPath()
+        ghost.move(player)
 
-    #draw pellets and power pellets
+    # check if player is colliding with ghost
+    if isColliding(player, ghost):
+        # play death animation and remove a life
+        player.deathEvents()
+
+    # draw pellets and power pellets
     for pellet in reversed(pellet_list):
-        if pellet.checkCollision(player):
+        if isColliding(pellet, player):
             pellet_list.remove(pellet)
             player.score += pellet.point_value
 
     for powerPellet in reversed(powerPellet_list):
-        if powerPellet.checkCollision(player):
+        if isColliding(powerPellet, player):
             powerPellet_list.remove(powerPellet)
             player.score += powerPellet.point_value
 
@@ -96,11 +109,11 @@ def update():
 #---------------------------------------------------------------------------
 def draw():
     if gameStarted == False:
-        #text, size, xpos, ypos, center text at point
+        # text, size, xpos, ypos, center text at point
         drawText("Click Any Button To Play", 45, w/2, h/2, True)
     else:
         pygame.draw.rect(screen,(0, 0, 0),(0, 0, w, h))
-        #background
+        # background
         screen.blit(pygame.image.load('colourmap.png'), (0,0))
         for pellet in pellet_list:
             pellet.draw()
@@ -124,12 +137,12 @@ def drawText(text, size, x, y, center):
     textH = overText.get_height()
 
     if center:
-        #centers the text at the specified point
+        # centers the text at the specified point
         screen.blit(overText, (int(x - textW/2), int(y - textH/2)))
     else:
         screen.blit(overText, (x, y))
 
-#create ghost path and place dots on map-----------------------------------------------------------------------
+# create ghost path and place dots on map-----------------------------------------------------------------------
 dotimage = image.load('pacmandotmap.png')
 pathImage = image.load('movemap.png')
 
@@ -214,21 +227,28 @@ placePowerPellets()
 placePellets()
 createGhostPath()
 
-#create ghost
+# create ghost
 ghost = Ghost(8, 14, ghostNodes)
 
+def isColliding(obj1, obj2):
+    distSquared = (obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2
 
-#game loop
+    if distSquared <= (obj1.rad + obj2.rad)**2:
+        return True
+    else:
+        return False
+
+# game loop
 running = True
 while running:
-    #loop through all pygame events--------------
+    # loop through all pygame events--------------
     for event in pygame.event.get():
 
-        #checks if user presses the x in the window
+        # checks if user presses the x in the window
         if event.type == pygame.QUIT:
             running = False
 
-        #key event handler-------------------------
+        # key event handler-------------------------
         if event.type == pygame.KEYDOWN:
 
             if gameStarted == False:
@@ -236,23 +256,23 @@ while running:
 
             if event.key == pygame.K_LEFT:
                 player.dirX = -1
-                player.dirY = 0 #set to 0 in case user presses an arrow while holding down another arrow
-                #getPath()
+                player.dirY = 0 # set to 0 in case user presses an arrow while holding down another arrow
+                # getPath()
 
             if event.key == pygame.K_RIGHT:
                 player.dirX = 1
                 player.dirY = 0
-                #getPath()
+                # getPath()
 
             if event.key == pygame.K_UP:
                 player.dirY = -1
                 player.dirX = 0
-                #getPath()
+                # getPath()
 
             if event.key == pygame.K_DOWN:
                 player.dirY = 1
                 player.dirX = 0
-                #getPath()
+                # getPath()
 
     update()
     draw()
