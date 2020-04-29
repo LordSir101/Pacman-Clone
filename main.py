@@ -1,49 +1,48 @@
 import pygame
 from player import Player
+from pygame import image, Color
 from pellet import Pellet
 from powerPellet import PowerPellet
-from pygame import image, Color
 from ghostNode import Node
 from ghost import Ghost
 from tunnel import Tunnel
-
-# temp libraries
-from random import seed
-from random import randint
+import time
 
 pygame.init()
 
-#window dimensions
+# window dimensions
 w = 600
 h = 600
 frameCounter = 0
-time = 0
 gameStarted = False
+
+# create screen
 firstMove = False
 
-#create screen
 screen = pygame.display.set_mode((w, h))
 
-#title and icon
+# title and icon
 pygame.display.set_caption("Game thing")
 
-#create player
+# create player
 player = Player(w, h)
 
-#create pellet array
+# create pellet array
 pellet_list = []
-num_pellets = 50
-nodeList = [] #list of actual nodes
-#create powerPellet array
+
+# list of actual nodes
+nodeList = []
+
+# create powerPellet array
 powerPellet_list = []
 
-#create ghostNodes array
+# create ghostNodes array
 ghostNodes = []
 
 # create two way tunnel
 tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
-#have the ghost get the path to its target
+# have the ghost get the path to its target
 def getPath():
 
     #we want the ghost to take the starting path until it has left home
@@ -70,34 +69,62 @@ def update():
     global frameCounter
     global ghost
     global prevNode
-    global time
     global firstMove
 
-    #keeps track of how many frames the current animation has been played for
-    frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
-    if frameCounter > player.animationRate and player.hasMoved():
-        player.changeFrame()
 
-    player.move()
+    # #keeps track of how many frames the current animation has been played for
+    # frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
+    # if frameCounter > player.animationRate and player.hasMoved():
+    #     player.changeFrame()
+
+    # keeps track of how many frames the current animation has been played for
+    # frameCounter does not count during the pause before death animation
+    if player.isLiving == True or (player.isLiving == False and player.pauseDone == True):
+        frameCounter = (frameCounter + 1) % 100
+
+    # walking animation
+    if frameCounter % player.animationRate == 0 and player.hasMoved() and player.isLiving == True:
+        # change the player.frame_alive every player.animationRate number of frames
+        player.frame_alive = (player.frame_alive + 1) % len(player.imgs_alive)
+
+
+    # death animation
+    # pause for around 1 second
+    if player.isLiving == False and player.pauseDone == False:
+        time.sleep(1.0)
+        player.pauseDone = True
+
+    if frameCounter % player.animationRate == 0 and player.pauseDone == True:
+        # change the player.frame_dead every player.animationRate number of frames
+        player.frame_dead = (player.frame_dead + 1) % len(player.imgs_dead)
 
     #tells us when the player has started moving pacman
     if player.hasMoved():
         firstMove = True
 
-    #only start moving the ghost if the player has made an input
-    if firstMove == True:
-        tunnel.teleportPlayer(player)
-        getPath()
-        ghost.move(player)
+    if player.isLiving == True:
+        player.move()
 
-    #draw pellets and power pellets
+        # only start moving the ghost if the player has made an input
+        if firstMove == True:
+            tunnel.teleportPlayer(player)
+            getPath()
+            ghost.move(player)
+
+    # check if pacman and ghost collide
+    if isColliding(player, ghost):
+        # play death animation and remove a life
+        player.deathEvents()
+
+    # check if pacman is eating pellets
     for pellet in reversed(pellet_list):
-        if pellet.checkCollision(player):
+        if isColliding(pellet, player):
             pellet_list.remove(pellet)
             player.score += pellet.point_value
 
+    # check if pacman is eating powerPellets
     for powerPellet in reversed(powerPellet_list):
-        if powerPellet.checkCollision(player):
+        if isColliding(powerPellet, player):
             powerPellet_list.remove(powerPellet)
             player.score += powerPellet.point_value
 
@@ -105,11 +132,11 @@ def update():
 #---------------------------------------------------------------------------
 def draw():
     if gameStarted == False:
-        #text, size, xpos, ypos, center text at point
+        # text, size, xpos, ypos, center text at point
         drawText("Click Any Button To Play", 45, w/2, h/2, True)
     else:
         pygame.draw.rect(screen,(0, 0, 0),(0, 0, w, h))
-        #background
+        # background
         screen.blit(pygame.image.load('colourmap.png'), (0,0))
         for pellet in pellet_list:
             pellet.draw()
@@ -128,7 +155,6 @@ def draw():
 
         drawText("Score: " + str(player.score), 20, 0, 580, False)
 
-
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)
     overText = font.render(text, True, (255,255,255))
@@ -136,12 +162,12 @@ def drawText(text, size, x, y, center):
     textH = overText.get_height()
 
     if center:
-        #centers the text at the specified point
+        # centers the text at the specified point
         screen.blit(overText, (int(x - textW/2), int(y - textH/2)))
     else:
         screen.blit(overText, (x, y))
 
-#create ghost path and place dots on map-----------------------------------------------------------------------
+# create ghost path and place dots on map-----------------------------------------------------------------------
 dotimage = image.load('pacmandotmap.png')
 pathImage = image.load('movemap.png')
 
@@ -221,25 +247,32 @@ def doesPowerPelletExistHere(x, y):
             return True
     return False
 
-
 placePowerPellets()
 placePellets()
 createGhostPath()
 
-#create ghost
+# create ghost
 ghost = Ghost(14, 14, ghostNodes)
 
-#game loop
+def isColliding(obj1, obj2):
+    distSquared = (obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2
+
+    if distSquared <= (obj1.rad + obj2.rad)**2:
+        return True
+    else:
+        return False
+
+# game loop
 running = True
 while running:
-    #loop through all pygame events--------------
+    # loop through all pygame events--------------
     for event in pygame.event.get():
 
-        #checks if user presses the x in the window
+        # checks if user presses the x in the window
         if event.type == pygame.QUIT:
             running = False
 
-        #key event handler-------------------------
+        # key event handler-------------------------
         if event.type == pygame.KEYDOWN:
 
             if gameStarted == False:
@@ -247,23 +280,23 @@ while running:
 
             if event.key == pygame.K_LEFT:
                 player.dirX = -1
-                player.dirY = 0 #set to 0 in case user presses an arrow while holding down another arrow
-                #getPath()
+                player.dirY = 0 # set to 0 in case user presses an arrow while holding down another arrow
+                # getPath()
 
             if event.key == pygame.K_RIGHT:
                 player.dirX = 1
                 player.dirY = 0
-                #getPath()
+                # getPath()
 
             if event.key == pygame.K_UP:
                 player.dirY = -1
                 player.dirX = 0
-                #getPath()
+                # getPath()
 
             if event.key == pygame.K_DOWN:
                 player.dirY = 1
                 player.dirX = 0
-                #getPath()
+                # getPath()
 
     update()
     draw()
