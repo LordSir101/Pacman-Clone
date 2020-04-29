@@ -17,6 +17,8 @@ frameCounter = 0
 gameStarted = False
 
 # create screen
+firstMove = False
+
 screen = pygame.display.set_mode((w, h))
 
 # title and icon
@@ -42,7 +44,8 @@ tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
 # have the ghost get the path to its target
 def getPath():
-    if player.hasMoved():
+    #we want the ghost to take the starting path until it has left home
+    if player.hasMoved() and not ghost.isLeaving:
         node = player.findNode(ghostNodes)
         ghost.bestPath = []
         ghost.getPath(ghost.currentNode, node)
@@ -63,6 +66,7 @@ def update():
     global frameCounter
     global ghost
     global prevNode
+    global firstMove
 
     # keeps track of how many frames the current animation has been played for
     # frameCounter does not count during the pause before death animation
@@ -84,13 +88,18 @@ def update():
         # change the player.frame_dead every player.animationRate number of frames
         player.frame_dead = (player.frame_dead + 1) % len(player.imgs_dead)
 
-    # player walks
-    if player.isLiving == True:
+    #tells us when the player has started moving pacman
+    if player.hasMoved():
+        firstMove = True
+    
+    if player.isLiving == True
         player.move()
-        tunnel.teleportPlayer(player)
-
-        getPath()
-        ghost.move(player)
+      
+        # only start moving the ghost if the player has made an input
+        if firstMove == True:
+            tunnel.teleportPlayer(player)
+            getPath()
+            ghost.move(player)
 
     # check if pacman and ghost collide
     if isColliding(player, ghost):
@@ -167,11 +176,11 @@ def createGhostPath():
     y = 0
     currY = 0
 
-    while y < 560 / pathScale:
+    while y < 580 / pathScale:
         ghostNodes.append([])
         x = 0
 
-        while x < 580 / pathScale:
+        while x < 600 / pathScale:
             targetX = 10 + (x*pathScale)
             targetY = 10 + (y*pathScale)
 
@@ -184,6 +193,14 @@ def createGhostPath():
             x += 1
         y += 1
         currY += 1
+
+    # for row in ghostNodes:
+    #     for val in row:
+    #         if val == 0:
+    #             print("0", end=' ')
+    #         else:
+    #             print("1", end=' ')
+    #     print()
 
 def placePellets():
     global pellet_list
@@ -216,20 +233,12 @@ def doesPowerPelletExistHere(x, y):
             return True
     return False
 
-# for row in ghostNodes:
-#     for val in row:
-#         if val == 0:
-#             print("0", end=' ')
-#         else:
-#             print("1", end=' ')
-#     print()
-
 placePowerPellets()
 placePellets()
 createGhostPath()
 
 # create ghost
-ghost = Ghost(8, 14, ghostNodes)
+ghost = Ghost(14, 14, ghostNodes)
 
 def isColliding(obj1, obj2):
     distSquared = (obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2

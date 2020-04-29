@@ -46,7 +46,7 @@ class Player:
         # current movement variables
         self.vel = 2.5
         self.x = self.scrnW/2 - self.rad + 10
-        self.y = self.scrnH/2 - self.rad
+        self.y = self.scrnH/2 - self.rad + 60
         self.dirX = 0
         self.dirY = 0
 
