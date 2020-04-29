@@ -44,20 +44,23 @@ tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
 # have the ghost get the path to its target
 def getPath():
+
     #we want the ghost to take the starting path until it has left home
+
     if player.hasMoved() and not ghost.isLeaving:
-        node = player.findNode(ghostNodes)
-        ghost.bestPath = []
-        ghost.getPath(ghost.currentNode, node)
-        ghost.shortestSize = 9223372036854775807
 
         #reset all nodes to discoverable
         for row in ghostNodes:
             for val in row:
-                if val == 0:
-                    pass
-                else:
+                if val != 0:
                     val.status = 0
+
+        node = player.findNode(ghostNodes)
+        #print(node.x, node.y)
+        ghost.bestPath = []
+        ghost.getPath(ghost.currentNode, node)
+        ghost.shortestSize = 9223372036854775807
+
 
 #---------------------------------------------------------------------------
 def update():
@@ -68,6 +71,12 @@ def update():
     global prevNode
     global firstMove
 
+
+    # #keeps track of how many frames the current animation has been played for
+    # frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
+    # if frameCounter > player.animationRate and player.hasMoved():
+    #     player.changeFrame()
+
     # keeps track of how many frames the current animation has been played for
     # frameCounter does not count during the pause before death animation
     if player.isLiving == True or (player.isLiving == False and player.pauseDone == True):
@@ -77,6 +86,7 @@ def update():
     if frameCounter % player.animationRate == 0 and player.hasMoved() and player.isLiving == True:
         # change the player.frame_alive every player.animationRate number of frames
         player.frame_alive = (player.frame_alive + 1) % len(player.imgs_alive)
+
 
     # death animation
     # pause for around 1 second
@@ -139,6 +149,10 @@ def draw():
 
         global ghost
         ghost.draw(screen)
+
+        # for node in ghost.bestPath:
+        #     pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
+
         drawText("Score: " + str(player.score), 20, 0, 580, False)
 
 
@@ -292,3 +306,4 @@ while running:
     update()
     draw()
     pygame.display.update()
+    #pygame.time.Clock().tick_busy_loop(200)
