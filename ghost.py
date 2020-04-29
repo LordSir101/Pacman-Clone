@@ -5,7 +5,7 @@ from ghostNode import Node
 class Ghost:
     def __init__(self, x, y, ghostPath):
         # start at 14 10
-  
+
         self.nodes = ghostPath
         #a path to help the ghost leave home
         self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14] ] #
@@ -231,7 +231,7 @@ class Ghost:
         distSquaredX = (start.x - target.x)**2
         distSquaredY = (start.y - target.y)**2
         dist = distSquaredX + distSquaredY
-        print(tunnelDist)
+        # print(tunnelDist)
         if dist < tunnelDist:
             return dist
         else:

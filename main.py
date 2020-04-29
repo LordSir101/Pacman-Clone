@@ -91,10 +91,10 @@ def update():
     #tells us when the player has started moving pacman
     if player.hasMoved():
         firstMove = True
-    
-    if player.isLiving == True
+
+    if player.isLiving == True:
         player.move()
-      
+
         # only start moving the ghost if the player has made an input
         if firstMove == True:
             tunnel.teleportPlayer(player)
