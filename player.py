@@ -95,23 +95,6 @@ class Player:
 
 
 
-
-
-
-        #check if pacman will move into a wall
-        if(nextX >= movemap.get_width()):
-            nextX = movemap.get_width() -1
-
-        if(nextX < 0):
-            nextX = 0
-
-        if(nextY >= movemap.get_height()):
-            nextY = movemap.get_height() -1
-
-        if(nextY < 0):
-            nextY = 0
-
-
         if movemap.get_at((int(nextX), int(nextY))) != Color(255,255,255):
             self.x += self.dirX * self.vel
             self.y += self.dirY * self.vel
@@ -198,7 +181,7 @@ class Player:
                     self.frame_alive = 0
                     self.frame_dead = 0
                     self.x = self.scrnW/2 - self.rad + 10
-                    self.y = self.scrnH/2 - self.rad
+                    self.y = self.scrnH/2 - self.rad + 60
                     self.pauseDone = False
 
     def findNode(self, nodes):

@@ -16,6 +16,7 @@ class Ghost:
 
         self.x = self.currentNode.x
         self.y = self.currentNode.y
+        self.rad = 10
 
         self.dirX = 0
         self.dirY = 0
