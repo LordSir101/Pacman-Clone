@@ -32,7 +32,9 @@ class Player:
         self.scale = 25
         self.sprite = pygame.transform.scale(self.imgs_alive[1], (self.scale, self.scale))
         self.rad = self.sprite.get_width() / 2
-
+        self.width = self.sprite.get_width()
+        self.height = self.sprite.get_height()
+        
         # state variables
         self.idle = True
         self.isLiving = True
@@ -74,34 +76,30 @@ class Player:
         # store current position for future reference
         self.prevX = self.x
         self.prevY = self.y
-        self.prevDirX = self.dirX
-        self.prevDirY = self.dirY
 
-        # this is approximately where pacman's sprite will collide with a wall
-        nextX = self.x + (self.rad * self.dirX) + (self.vel * self.dirX)
-        nextY = self.y + (self.rad * self.dirY) + (self.vel * self.dirY)
+        #this is approximately where packman's sprite will collide with a wall
+        nextX = self.x + self.dirX * self.vel + (self.width/2 * self.dirX)
+        nextY = self.y + self.dirY *self.vel + (self.height/2 * self.dirY)
 
-        # if self.prevDirX != self.dirX or self.prevDirY != self.dirY:
-        #     altNextX = self.x + (self.rad * self.prevDirX) + (self.vel * self.prevDirX)
-        #     altNextY = self.y + (self.rad * self.prevDirY) + (self.vel * self.prevDirY)
-        # else:
-        #     altNextX = 0
-        #     altNextY = 0
-        #
-        # # update the move queue
-        # if self.dirY < 0:
-        #     self.moveQueue = 1      # UP
-        # elif self.dirY > 0:
-        #     self.moveQueue = 2      # DOWN
-        # elif self.dirX < 0:
-        #     self.moveQueue = 3      # LEFT
-        # elif self.dirX > 0:
-        #     self.moveQueue = 4      # RIGHT
-        # else:
-        #     self.moveQueue = 0      # NONE
+        if(nextX >= movemap.get_width()):
+           nextX = movemap.get_width() - 1
 
-        # update pacman's position if there's no wall blocking him
-        if movemap.get_at((int(nextX), int(nextY))) != Color(255, 255, 255):
+        if(nextX < 0):
+           nextX = 0
+
+        if(nextY >= movemap.get_height()):
+           nextY = movemap.get_height() - 1
+
+        if(nextY < 0):
+           nextY = 0
+
+
+
+
+
+
+        #check if pacman will move into a wall
+        if movemap.get_at((int(nextX), int(nextY))) != Color(255,255,255):
             self.x += self.dirX * self.vel
             self.y += self.dirY * self.vel
             self.moveQueue = 0
