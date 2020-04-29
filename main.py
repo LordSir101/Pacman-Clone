@@ -21,7 +21,6 @@ time = 0
 gameStarted = False
 firstMove = False
 
-
 #create screen
 screen = pygame.display.set_mode((w, h))
 
@@ -125,7 +124,6 @@ def draw():
         drawText("Score: " + str(player.score), 20, 0, 580, False)
 
 
-
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)
     overText = font.render(text, True, (255,255,255))
@@ -161,11 +159,11 @@ def createGhostPath():
     y = 0
     currY = 0
 
-    while y < 560 / pathScale:
+    while y < 580 / pathScale:
         ghostNodes.append([])
         x = 0
 
-        while x < 580 / pathScale:
+        while x < 600 / pathScale:
             targetX = 10 + (x*pathScale)
             targetY = 10 + (y*pathScale)
 
@@ -179,13 +177,13 @@ def createGhostPath():
         y += 1
         currY += 1
 
-    for row in ghostNodes:
-        for val in row:
-            if val == 0:
-                print("0", end=' ')
-            else:
-                print("1", end=' ')
-        print()
+    # for row in ghostNodes:
+    #     for val in row:
+    #         if val == 0:
+    #             print("0", end=' ')
+    #         else:
+    #             print("1", end=' ')
+    #     print()
 
 def placePellets():
     global pellet_list
@@ -203,8 +201,6 @@ def placePellets():
             y += 1
         x += 1
 
-
-
 def placePowerPellets():
     global powerPellet_list
     global screen
@@ -221,15 +217,12 @@ def doesPowerPelletExistHere(x, y):
     return False
 
 
-
-
 placePowerPellets()
 placePellets()
 createGhostPath()
 
 #create ghost
 ghost = Ghost(14, 14, ghostNodes)
-
 
 #game loop
 running = True
