@@ -44,6 +44,23 @@ class Player:
         nextX = self.x + self.dirX * self.vel + (self.width/2 * self.dirX)
         nextY = self.y + self.dirY *self.vel + (self.height/2 * self.dirY)
 
+        if(nextX >= movemap.get_width()):
+           nextX = movemap.get_width() - 1
+
+        if(nextX < 0):
+           nextX = 0
+
+        if(nextY >= movemap.get_height()):
+           nextY = movemap.get_height() - 1
+
+        if(nextY < 0):
+           nextY = 0
+
+
+
+
+
+
         #check if pacman will move into a wall
         if movemap.get_at((int(nextX), int(nextY))) != Color(255,255,255):
             self.x += self.dirX * self.vel
