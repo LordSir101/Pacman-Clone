@@ -155,6 +155,11 @@ def draw():
 
         drawText("Score: " + str(player.score), 20, 0, 580, False)
 
+
+        player.draw(screen)
+        drawText("Lives: " + str(player.lives), 20, 520, 580, False)
+
+
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)
     overText = font.render(text, True, (255,255,255))
