@@ -4,37 +4,44 @@ from ghostNode import Node
 
 class Ghost:
     def __init__(self, x, y, ghostPath):
-
+        # start at 14 10
+  
         self.nodes = ghostPath
         #a path to help the ghost leave home
         self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14] ] #
         self.testPath = []
         self.placeOnPath = 1
         self.shortestSize = 9223372036854775807
-        self.currentNode = self.nodes[y][x]  #ypos #xpos
+
+        self.currentNode = self.nodes[y][x]     # ypos xpos
+        # self.prevX = x
+        # self.prevY = y
 
         self.x = self.currentNode.x
         self.y = self.currentNode.y
+        self.rad = 10
 
         self.dirX = 0
         self.dirY = 0
         self.vel = 2
-        self.alpha = 0.3 #how smooth the move animation is
+
+        self.alpha = 0.3        # how smooth the move animation is
         self.isLeaving = True
+
 
         self.setDirection()
 
     def move(self, player):
-        #print(len(self.bestPath))
+        # print(len(self.bestPath))
+        # when the ghost reaches a node in its path, move to the next node
 
-        #when the ghost reaches a node in its path, move to the next node
         if self.placeOnPath < len(self.bestPath):
             tolerance  = self.alpha * self.alpha #how close a ghost has to be to a node to consider it "reached"
             distSquaredX = (self.x - self.bestPath[self.placeOnPath].x)**2
             distSquaredY = (self.y - self.bestPath[self.placeOnPath].y)**2
 
             if distSquaredX < tolerance and distSquaredY < tolerance:
-                #when the ghost reaches a node in its path, move to the next node
+                # when the ghost reaches a node in its path, move to the next node
                 self.placeOnPath +=1
                 if self.placeOnPath < len(self.bestPath):
                     next = self.bestPath[self.placeOnPath]
@@ -51,11 +58,13 @@ class Ghost:
                     else:
                         self.setDirection()
 
-            #move the ghost
+            # move the ghost
             if self.placeOnPath < len(self.bestPath):
                 self.currentNode = self.bestPath[self.placeOnPath]
-                self.lerp(self.alpha) #smooth the movement between two points
-            #if there is no path for some reason, stay still
+
+                self.lerp(self.alpha) #smooth the movement petween two points
+            # if there is no path for some reason, stay still
+
             else:
                 self.dirX = 0
                 self.dirY = 0
@@ -67,15 +76,15 @@ class Ghost:
 
     def setDirection(self):
         if self.placeOnPath < len(self.bestPath):
-            #divide distance by magnitude of distance to get direction of next point
+            # divide distance by magnitude of distance to get direction of next point
             distX = self.bestPath[self.placeOnPath].x - self.currentNode.x
             distY = self.bestPath[self.placeOnPath].y - self.currentNode.y
 
             magX = abs(distX)
             magY = abs(distY)
 
-            #if the magnitude is 0 this means that the ghost is on the same axis as the point
-            #therefore we do not move in that direction
+            # if the magnitude is 0 this means that the ghost is on the same axis as the point
+            # therefore we do not move in that direction
             self.dirX = distX / magX if magX != 0 else 0
             self.dirY = distY / magY if magY != 0 else 0
 
@@ -84,14 +93,14 @@ class Ghost:
         self.y += self.vel * self.dirY
 
 
-    #start and root are the same node initially
-    #root is the originonal start, start is the recusive start
+    # start and root are the same node initially
+    # root is the originonal start, start is the recusive start
     def getPath(self, start, target):
 
         self.placeOnPath = 0
         endOfPath = False
 
-        #set status to being checked
+        # set status to being checked
         start.status = 1
 
         self.testPath.append(start)
@@ -99,17 +108,17 @@ class Ghost:
         prevX = start.idX
         prevY = start.idY
 
-        #check if current is the target node
+        # check if current is the target node
         if start.x == target.x and start.y == target.y:
-            #check if this is the shortest path
+            # check if this is the shortest path
             if len(self.testPath) < self.shortestSize:
                 self.shortestSize = len(self.testPath)
                 self.bestPath = self.testPath.copy()
 
-            #undiscover target node
+            # undiscover target node
             target.status = 0
 
-            #remove goal from current path so we can check other paths from the previous node
+            # remove goal from current path so we can check other paths from the previous node
             self.testPath.pop()
             endOfPath = True
 
@@ -131,23 +140,23 @@ class Ghost:
                 leftX = prevX -1
                 leftY = prevY
 
-            #UP
+            # UP
             upX = prevX
             upY = prevY -1
 
-            #DOWN
+            # DOWN
             downX = prevX
             downY = prevY + 1
 
-            #define the neighbor nodes
-            #set it to 0 (invalid) if index is out of range
+            # define the neighbor nodes
+            # set it to 0 (invalid) if index is out of range
             right = self.nodes[rightY][rightX] if rightY < len(self.nodes) and rightX < len(self.nodes[rightY]) else 0
             left = self.nodes[leftY][leftX] if leftY < len(self.nodes) and leftX < len(self.nodes[leftY]) else 0
             up = self.nodes[upY][upX] if upY < len(self.nodes) and upX < len(self.nodes[upY]) else 0
             down = self.nodes[downY][downX] if downY < len(self.nodes) and downX < len(self.nodes[downY]) else 0
 
-            #get distance between neighbor and target node
-            #if node invalid, set to max distance
+            # get distance between neighbor and target node
+            # if node invalid, set to max distance
             distRight = self.getDist(right, target) if right != 0 else 9223372036854775807
             distLeft = self.getDist(left, target) if left != 0 else 9223372036854775807
             distUp = self.getDist(up, target) if up != 0 else 9223372036854775807
@@ -156,12 +165,12 @@ class Ghost:
             neighbors = [distRight, distLeft, distUp, distDown]
             lookingForClosestNeighbor = True
 
-            #check closest neighbor until one is found that is a valid node
+            # check closest neighbor until one is found that is a valid node
             while lookingForClosestNeighbor:
 
                 closest = min(neighbors)
 
-                #if the right neighbor is the closest and a valid node, visit it
+                # if the right neighbor is the closest and a valid node, visit it
                 if closest == distRight and right != 0 and right.status == 0:
                     self.gotoNode(right, target)
                     lookingForClosestNeighbor = False
@@ -175,10 +184,10 @@ class Ghost:
                     self.gotoNode(down, target)
                     lookingForClosestNeighbor = False
 
-                #if the closest node is not valid, remove it from possible neighbors and try again
+                # if the closest node is not valid, remove it from possible neighbors and try again
                 else:
                     neighbors.remove(closest)
-                    #if there are no valid neighbors, stop searching
+                    # if there are no valid neighbors, stop searching
                     if len(neighbors) == 0:
                         lookingForClosestNeighbor = False
 
@@ -229,4 +238,4 @@ class Ghost:
             return tunnelDist
 
     def draw(self, screen):
-        pygame.draw.circle(screen, (255, 0, 0), [int(self.x), int(self.y)], 10)
+        pygame.draw.circle(screen, (255, 0, 0), [int(self.x), int(self.y)], self.rad)
