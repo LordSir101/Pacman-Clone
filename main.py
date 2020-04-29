@@ -1,15 +1,12 @@
 import pygame
 from player import Player
+from pygame import image, Color
 from pellet import Pellet
 from powerPellet import PowerPellet
-from pygame import image, Color
 from ghostNode import Node
 from ghost import Ghost
 from tunnel import Tunnel
-
-# temp libraries
-from random import seed
-from random import randint
+import time
 
 pygame.init()
 
@@ -17,10 +14,7 @@ pygame.init()
 w = 600
 h = 600
 frameCounter = 0
-frameCounter2 = 0
-time = 0
 gameStarted = False
-
 
 # create screen
 screen = pygame.display.set_mode((w, h))
@@ -33,7 +27,6 @@ player = Player(w, h)
 
 # create pellet array
 pellet_list = []
-num_pellets = 50
 
 # list of actual nodes
 nodeList = []
@@ -68,20 +61,30 @@ def update():
 
     global player
     global frameCounter
-    global frameCounter2
     global ghost
     global prevNode
-    global time
 
     # keeps track of how many frames the current animation has been played for
-    frameCounter = (frameCounter + 1) % 100
-    if frameCounter % (player.animationRate + 1) == 0 and player.hasMoved():
-        # change the player.frame_alive every 6 frames
+    # frameCounter does not count during the pause before death animation
+    if player.isLiving == True or (player.isLiving == False and player.pauseDone == True):
+        frameCounter = (frameCounter + 1) % 100
+
+    # walking animation
+    if frameCounter % player.animationRate == 0 and player.hasMoved() and player.isLiving == True:
+        # change the player.frame_alive every player.animationRate number of frames
         player.frame_alive = (player.frame_alive + 1) % len(player.imgs_alive)
 
-    if frameCounter % ((player.animationRate-1) + 1) == 0:
+    # death animation
+    # pause for around 1 second
+    if player.isLiving == False and player.pauseDone == False:
+        time.sleep(1.0)
+        player.pauseDone = True
+
+    if frameCounter % player.animationRate == 0 and player.pauseDone == True:
+        # change the player.frame_dead every player.animationRate number of frames
         player.frame_dead = (player.frame_dead + 1) % len(player.imgs_dead)
 
+    # player walks
     if player.isLiving == True:
         player.move()
         tunnel.teleportPlayer(player)
@@ -89,17 +92,18 @@ def update():
         getPath()
         ghost.move(player)
 
-    # check if player is colliding with ghost
+    # check if pacman and ghost collide
     if isColliding(player, ghost):
         # play death animation and remove a life
         player.deathEvents()
 
-    # draw pellets and power pellets
+    # check if pacman is eating pellets
     for pellet in reversed(pellet_list):
         if isColliding(pellet, player):
             pellet_list.remove(pellet)
             player.score += pellet.point_value
 
+    # check if pacman is eating powerPellets
     for powerPellet in reversed(powerPellet_list):
         if isColliding(powerPellet, player):
             powerPellet_list.remove(powerPellet)
@@ -127,8 +131,6 @@ def draw():
         global ghost
         ghost.draw(screen)
         drawText("Score: " + str(player.score), 20, 0, 580, False)
-
-
 
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)
@@ -213,7 +215,6 @@ def doesPowerPelletExistHere(x, y):
         if powerPellet.x == x and powerPellet.y == y:
             return True
     return False
-
 
 # for row in ghostNodes:
 #     for val in row:
