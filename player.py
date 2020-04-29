@@ -34,7 +34,7 @@ class Player:
         self.rad = self.sprite.get_width() / 2
         self.width = self.sprite.get_width()
         self.height = self.sprite.get_height()
-        
+
         # state variables
         self.idle = True
         self.isLiving = True
@@ -95,19 +95,22 @@ class Player:
 
 
 
-
-
-
-        #check if pacman will move into a wall
         if movemap.get_at((int(nextX), int(nextY))) != Color(255,255,255):
             self.x += self.dirX * self.vel
             self.y += self.dirY * self.vel
             self.moveQueue = 0
 
-        # # if a wall is blocking pacman continue moving in the previous direction
-        # elif movemap.get_at((int(altNextX), int(altNextY))) != Color(255, 255, 255):
-        #     self.x += self.prevDirX * self.vel
-        #     self.y += self.prevDirY * self.vel
+
+        #player position is the center of the sprite
+        #this keeps pacman from going off screen
+        if self.x > self.scrnW - self.width/2:
+            self.x = self.scrnW - self.width/2
+        elif self.x < 0 + self.width/2:
+            self.x = 0 + self.width/2
+        if self.y > self.scrnH - self.height/2:
+            self.y = self.scrnH - self.height/2
+        elif self.y < 0 + self.height/2:
+            self.y = 0  + self.height/2
 
     def hasMoved(self):
         if(self.x == self.prevX and self.y == self.prevY):
@@ -178,7 +181,7 @@ class Player:
                     self.frame_alive = 0
                     self.frame_dead = 0
                     self.x = self.scrnW/2 - self.rad + 10
-                    self.y = self.scrnH/2 - self.rad
+                    self.y = self.scrnH/2 - self.rad + 60
                     self.pauseDone = False
 
     def findNode(self, nodes):
