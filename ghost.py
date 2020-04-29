@@ -1,6 +1,7 @@
 from pygame import image, Color
 import pygame
 from ghostNode import Node
+import random
 
 class Ghost:
     def __init__(self, x, y, ghostPath):
@@ -25,7 +26,12 @@ class Ghost:
         self.setDirection()
 
     def move(self, player):
-        #print(len(self.bestPath))
+
+        if self.placeOnPath == len(self.bestPath) -1:
+            self.isLeaving = False
+            #close the entrance to home so the ghost cant go back in
+            self.nodes[12][14] = 0
+            self.nodes[12][15] = 0
 
         #when the ghost reaches a node in its path, move to the next node
         if self.placeOnPath < len(self.bestPath):
@@ -55,15 +61,10 @@ class Ghost:
             if self.placeOnPath < len(self.bestPath):
                 self.currentNode = self.bestPath[self.placeOnPath]
                 self.lerp(self.alpha) #smooth the movement between two points
-            #if there is no path for some reason, stay still
-            else:
-                self.dirX = 0
-                self.dirY = 0
-        if self.placeOnPath == len(self.bestPath):
-            self.isLeaving = False
-            #close the entrance to home so the ghost cant go back in
-            self.nodes[12][14] = 0
-            self.nodes[12][15] = 0
+            #if there is no path for some reason, move randomly
+            #elif len(self.bestPath) == 0:
+                #self.moveRandomly()
+
 
     def setDirection(self):
         if self.placeOnPath < len(self.bestPath):
@@ -164,23 +165,23 @@ class Ghost:
                 #if the right neighbor is the closest and a valid node, visit it
                 if closest == distRight and right != 0 and right.status == 0:
                     self.gotoNode(right, target)
-                    lookingForClosestNeighbor = False
+                    #lookingForClosestNeighbor = False
                 elif closest == distLeft and left != 0 and left.status == 0:
                     self.gotoNode(left, target)
-                    lookingForClosestNeighbor = False
+                    #lookingForClosestNeighbor = False
                 elif closest == distUp and up != 0 and up.status == 0:
                     self.gotoNode(up, target)
-                    lookingForClosestNeighbor = False
+                    #lookingForClosestNeighbor = False
                 elif closest == distDown and down != 0 and down.status == 0:
                     self.gotoNode(down, target)
-                    lookingForClosestNeighbor = False
+                    #lookingForClosestNeighbor = False
 
                 #if the closest node is not valid, remove it from possible neighbors and try again
-                else:
-                    neighbors.remove(closest)
-                    #if there are no valid neighbors, stop searching
-                    if len(neighbors) == 0:
-                        lookingForClosestNeighbor = False
+                neighbors.remove(closest)
+
+                #if there are no valid neighbors, stop searching
+                if len(neighbors) == 0:
+                    lookingForClosestNeighbor = False
 
             #after checking neighbors, remove from currentPath
             self.testPath.remove(start)
@@ -222,11 +223,60 @@ class Ghost:
         distSquaredX = (start.x - target.x)**2
         distSquaredY = (start.y - target.y)**2
         dist = distSquaredX + distSquaredY
-        print(tunnelDist)
+
         if dist < tunnelDist:
             return dist
         else:
             return tunnelDist
+
+    def moveRandomly(self):
+        # for row in self.nodes:
+        #     for val in row:
+        #         if val != 0:
+        #             val.status = 0
+
+        choicePicked = False
+
+        rightX = self.currentNode.idX+ 1
+        rightY = self.currentNode.idY
+
+        #LEFT
+        leftX = self.currentNode.idX -1
+        leftY = self.currentNode.idY
+
+        #UP
+        upX = self.currentNode.idX
+        upY = self.currentNode.idY -1
+
+        #DOWN
+        downX = self.currentNode.idX
+        downY = self.currentNode.idY + 1
+
+        right = self.nodes[rightY][rightX] if rightY < len(self.nodes) and rightX < len(self.nodes[rightY]) else 0
+        left = self.nodes[leftY][leftX] if leftY < len(self.nodes) and leftX < len(self.nodes[leftY]) else 0
+        up = self.nodes[upY][upX] if upY < len(self.nodes) and upX < len(self.nodes[upY]) else 0
+        down = self.nodes[downY][downX] if downY < len(self.nodes) and downX < len(self.nodes[downY]) else 0
+
+
+        choices = [1, 2, 3, 4]
+
+        # while not choicePicked:
+        #     dir = random.choice(choices)
+        #
+        #     if right != 0 and right.status == 0 and dir == 1:
+        #         self.bestPath = [self.currentNode, right]
+        #         choicePicked = True
+        #     elif left != 0 and left.status == 0 and dir == 2:
+        #         self.bestPath = [self.currentNode, left]
+        #         choicePicked = True
+        #     elif up != 0 and up.status == 0 and dir == 3:
+        #         self.bestPath = [self.currentNode, up]
+        #         choicePicked = True
+        #     elif down != 0 and down.status == 0 and dir == 4:
+        #         self.bestPath = [self.currentNode, down]
+        #         choicePicked = True
+        #
+        #     choices.remove(dir)
 
     def draw(self, screen):
         pygame.draw.circle(screen, (255, 0, 0), [int(self.x), int(self.y)], 10)
