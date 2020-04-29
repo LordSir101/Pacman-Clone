@@ -45,14 +45,68 @@ ghostNodes = []
 tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
 #have the ghost get the path to its target
-def getPath():
+def get_pinky_node():
+    # global ghostNodes
+    future_pos = player.findNode(ghostNodes)
+    fpX = future_pos.idX
+    fpY = future_pos.idY
+    # 14 0 /  14 29
+    # These are the same thing
+    # print(ghostNodes[future_pos.idY][future_pos.idX])
+    # print(future_pos)
+    # print("")
+    # print("")
+    if fpY == 14:
+        return player.findNode(ghostNodes)
+
+    if player.dirY < 0:
+    # if True:
+        while ghostNodes[fpY][fpX] != 0:
+            fpY -= 1
+        fpY += 1
+
+    elif player.dirY > 0:
+        while ghostNodes[fpY][fpX] != 0:
+            fpY += 1
+        fpY -= 1
+
+    elif player.dirX < 0:
+        while ghostNodes[fpY][fpX] != 0:
+            fpX -= 1
+        fpX += 1
+
+    elif player.dirX > 0:
+        while ghostNodes[fpY][fpX] != 0:
+            fpX += 1
+        fpX -= 1
+    return ghostNodes[fpY][fpX]
+
+
+def getPathPinky():
+    # we want the ghost to take the starting path until it has left home
+    if player.hasMoved() and not ghostPink.isLeaving:
+        node = get_pinky_node()
+        # node = player.findNode(ghostNodes)
+        ghostPink.bestPath = []
+        ghostPink.getPath(ghostPink.currentNode, node)
+        ghostPink.shortestSize = 9223372036854775807
+
+        #reset all nodes to discoverable
+        for row in ghostNodes:
+            for val in row:
+                if val == 0:
+                    pass
+                else:
+                    val.status = 0
+
+
+def getPathBlinky():
     #we want the ghost to take the starting path until it has left home
     if player.hasMoved() and not ghost.isLeaving:
         node = player.findNode(ghostNodes)
         ghost.bestPath = []
         ghost.getPath(ghost.currentNode, node)
         ghost.shortestSize = 9223372036854775807
-
         #reset all nodes to discoverable
         for row in ghostNodes:
             for val in row:
@@ -87,8 +141,13 @@ def update():
     #only start moving the ghost if the player has made an input
     if firstMove == True:
         tunnel.teleportPlayer(player)
-        getPath()
+        if frameCounter % 2 == 0:
+            getPathBlinky()
+            # getPathInky()
+
         ghost.move(player)
+        ghostPink.move(player)
+        # ghostBlue.move(player)
 
     #draw pellets and power pellets
     for pellet in reversed(pellet_list):
@@ -104,6 +163,7 @@ def update():
 
 #---------------------------------------------------------------------------
 def draw():
+
     if gameStarted == False:
         #text, size, xpos, ypos, center text at point
         drawText("Click Any Button To Play", 45, w/2, h/2, True)
@@ -121,10 +181,10 @@ def draw():
         player.draw(screen)
 
         global ghost
-        ghost.draw(screen)
+        global ghostPink
+        ghost.draw(screen, (255, 0, 0))
+        ghostPink.draw(screen, (255, 130, 130))
         drawText("Score: " + str(player.score), 20, 0, 580, False)
-
-
 
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)
@@ -161,11 +221,11 @@ def createGhostPath():
     y = 0
     currY = 0
 
-    while y < 560 / pathScale:
+    while y < 580 / pathScale:
         ghostNodes.append([])
         x = 0
 
-        while x < 580 / pathScale:
+        while x < 600 / pathScale:
             targetX = 10 + (x*pathScale)
             targetY = 10 + (y*pathScale)
 
@@ -179,13 +239,13 @@ def createGhostPath():
         y += 1
         currY += 1
 
-    for row in ghostNodes:
-        for val in row:
-            if val == 0:
-                print("0", end=' ')
-            else:
-                print("1", end=' ')
-        print()
+    # for row in ghostNodes:
+    #     for val in row:
+    #         if val == 0:
+    #             print("0", end=' ')
+    #         else:
+    #             print("1", end=' ')
+    #     print()
 
 def placePellets():
     global pellet_list
@@ -204,7 +264,6 @@ def placePellets():
         x += 1
 
 
-
 def placePowerPellets():
     global powerPellet_list
     global screen
@@ -221,19 +280,37 @@ def doesPowerPelletExistHere(x, y):
     return False
 
 
-
-
 placePowerPellets()
 placePellets()
 createGhostPath()
 
-#create ghost
-ghost = Ghost(14, 14, ghostNodes)
+#   create ghost
+ghostPink = Ghost(14, 14, ghostNodes, (255, 134, 130))
+ghost = Ghost(14, 14, ghostNodes, (255, 0, 0))
+
+
+# To Check FPS --------------------------------------
+# clock = pygame.time.Clock()
+# press = False
+# lowest = 100000
+# highest =0
+# loops = 0
 
 
 #game loop
 running = True
 while running:
+
+    # loops += 1
+    # clock.tick()
+    # if clock.get_fps() < lowest and loops > 100:
+    #     lowest = clock.get_fps()
+    # elif clock.get_fps() > highest:
+    #     highest = clock.get_fps()
+    #
+    # pygame.display.set_caption(str(clock.get_fps()))
+
+    # pygame.display.flip()
     #loop through all pygame events--------------
     for event in pygame.event.get():
 
@@ -266,6 +343,9 @@ while running:
                 player.dirY = 1
                 player.dirX = 0
                 #getPath()
+            if event.key == pygame.K_SPACE:
+                player.dirY = 0
+                player.dirX = 0
 
     update()
     draw()

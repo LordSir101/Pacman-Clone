@@ -90,7 +90,7 @@ class Player:
             elif self.dirX < 0:
                 sprite = pygame.transform.scale(self.imgs[self.frame], (self.scale, self.scale))
                 screen.blit(sprite, (self.x - self.width/2, self.y - self.height/2))
-            elif self.dirY >0:
+            elif self.dirY > 0:
                 sprite = pygame.transform.rotate(self.imgs[self.frame], 90)
                 scaled = pygame.transform.scale(sprite, (self.scale, self.scale))
                 screen.blit(scaled, (self.x - self.width/2, self.y - self.height/2))
@@ -105,7 +105,6 @@ class Player:
             self.frame = 0
 
     def findNode(self, nodes):
-
         for row in nodes:
             for val in row:
                 if val != 0:

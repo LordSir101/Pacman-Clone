@@ -3,7 +3,7 @@ import pygame
 from ghostNode import Node
 
 class Ghost:
-    def __init__(self, x, y, ghostPath):
+    def __init__(self, x, y, ghostPath, colour):
         #start at 14 10
         self.nodes = ghostPath
         #a path to help the ghost leave home
@@ -173,5 +173,7 @@ class Ghost:
         distSquaredY = (start.y - target.y)**2
         return distSquaredX + distSquaredY
 
-    def draw(self, screen):
-        pygame.draw.circle(screen, (255, 0, 0), [int(self.x), int(self.y)], 10)
+    def draw(self, screen, colour):
+        pygame.draw.circle(screen, colour, [int(self.x), int(self.y)], 15)
+        for x in self.bestPath:
+            pygame.draw.circle(screen, (20, 255, 255), [int(x.x), int(x.y)], 5)
