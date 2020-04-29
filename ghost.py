@@ -4,7 +4,7 @@ from ghostNode import Node
 
 class Ghost:
     def __init__(self, x, y, ghostPath):
-        #start at 14 10
+
         self.nodes = ghostPath
         #a path to help the ghost leave home
         self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14] ] #
@@ -36,7 +36,20 @@ class Ghost:
             if distSquaredX < tolerance and distSquaredY < tolerance:
                 #when the ghost reaches a node in its path, move to the next node
                 self.placeOnPath +=1
-                self.setDirection()
+                if self.placeOnPath < len(self.bestPath):
+                    next = self.bestPath[self.placeOnPath]
+                    if next == self.nodes[14][28] and self.bestPath[self.placeOnPath -1] == self.nodes[14][2]:
+                        self.currentNode = self.bestPath[self.placeOnPath]
+                        self.x = next.x
+                        self.y = next.y
+                        return
+                    elif next == self.nodes[14][1] and self.bestPath[self.placeOnPath -1] == self.nodes[14][28]:
+                        self.currentNode = self.bestPath[self.placeOnPath]
+                        self.x = next.x
+                        self.y = next.y
+                        return
+                    else:
+                        self.setDirection()
 
             #move the ghost
             if self.placeOnPath < len(self.bestPath):
@@ -103,12 +116,20 @@ class Ghost:
         if not endOfPath:
             #visit each neighbor and check all thier undiscovered neighbors
             #RIGHT
-            rightX = prevX+ 1
-            rightY = prevY
+            if prevX == 28 and prevY == 14:
+                rightX = 1
+                rightY = 14
+            else:
+                rightX = prevX+ 1
+                rightY = prevY
 
             #LEFT
-            leftX = prevX -1
-            leftY = prevY
+            if prevX == 2 and prevY == 14:
+                leftX = 28
+                leftY = 14
+            else:
+                leftX = prevX -1
+                leftY = prevY
 
             #UP
             upX = prevX
@@ -169,9 +190,43 @@ class Ghost:
 
 
     def getDist(self, start, target):
+        nearTunnel = False
+        tunnelDist = 9223372036854775807
+        #check if ghost is near a tunnel:
+        #check if node is on left side
+        if start.idX < 13 and start.idX > 0:
+            #distance from node to left tunnel
+            dsX = (start.x - self.nodes[14][0].x)**2
+            dsY = (start.y - self.nodes[14][0].y)**2
+            #right tunnel to pacman
+            dsX2 = (self.nodes[14][28].x - target.x)**2
+            dsY2 = (self.nodes[14][28].y - target.y)**2
+
+            tunnelDist1 = dsX + dsY
+            tunnelDist2 = dsX2 + dsY2
+            tunnelDist = tunnelDist1 + tunnelDist2
+
+        #check if node is on right side
+        elif start.idX < 29 and start.idX > 14:
+            #distance from node to right tunnel
+            dsX = (start.x - self.nodes[14][28].x)**2
+            dsY = (start.y - self.nodes[14][28].y)**2
+            #left tunnel to pacman
+            dsX2 = (self.nodes[14][0].x - target.x)**2
+            dsY2 = (self.nodes[14][0].y - target.y)**2
+
+            tunnelDist1 = dsX + dsY
+            tunnelDist2 = dsX2 + dsY2
+            tunnelDist = tunnelDist1 + tunnelDist2
+
         distSquaredX = (start.x - target.x)**2
         distSquaredY = (start.y - target.y)**2
-        return distSquaredX + distSquaredY
+        dist = distSquaredX + distSquaredY
+        print(tunnelDist)
+        if dist < tunnelDist:
+            return dist
+        else:
+            return tunnelDist
 
     def draw(self, screen):
         pygame.draw.circle(screen, (255, 0, 0), [int(self.x), int(self.y)], 10)
