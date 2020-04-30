@@ -27,7 +27,8 @@ class Player:
         self.y = height/2 - self.height/2 + 60
         self.prevX = -1
         self.prevY = -1
-        self.vel = 2.5
+        # TODO: change vel back to 2.5
+        self.vel = 1.5
         self.dirX = 0
         self.dirY = 0
         self.score = 0
@@ -104,13 +105,20 @@ class Player:
         if self.frame > len(self.imgs) -1:
             self.frame = 0
 
-    def findNode(self, nodes):
+    def findNode(self, nodes, optional_other=None):
+        # optional_other option is for searching near x, y instead of the player
+        # optional_other = [x, y]
         for row in nodes:
             for val in row:
                 if val != 0:
                     tolerance  = 25 * 25
-                    distSquaredX = (val.x - self.x)**2
-                    distSquaredY = (val.y - self.y)**2
+                    if optional_other == None:
+                        distSquaredX = (val.x - self.x)**2
+                        distSquaredY = (val.y - self.y)**2
+                    else:
+                        distSquaredX = (val.x - optional_other[0])
+                        distSquaredY = (val.y - optional_other[1])
+
                     if distSquaredX < tolerance and distSquaredY < tolerance:
                         #print(val.x)
                         return val

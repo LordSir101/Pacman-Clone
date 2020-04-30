@@ -45,46 +45,74 @@ ghostNodes = []
 tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
 #have the ghost get the path to its target
+
+pinky_node = player.findNode(ghostNodes)
 def get_pinky_node():
+    global pinky_node
     # global ghostNodes
     future_pos = player.findNode(ghostNodes)
     fpX = future_pos.idX
     fpY = future_pos.idY
     # 14 0 /  14 29
-    # These are the same thing
-    # print(ghostNodes[future_pos.idY][future_pos.idX])
-    # print(future_pos)
-    # print("")
-    # print("")
     if fpY == 14:
         return player.findNode(ghostNodes)
 
+    count = 1
     if player.dirY < 0:
-    # if True:
-        while ghostNodes[fpY][fpX] != 0:
+        while ghostNodes[fpY][fpX] != 0 and count < 5:
+            count += 1
             fpY -= 1
         fpY += 1
 
     elif player.dirY > 0:
-        while ghostNodes[fpY][fpX] != 0:
+        while ghostNodes[fpY][fpX] != 0 and count < 5:
+            count += 1
             fpY += 1
         fpY -= 1
 
     elif player.dirX < 0:
-        while ghostNodes[fpY][fpX] != 0:
+        while ghostNodes[fpY][fpX] != 0 and count < 5:
+            count += 1
             fpX -= 1
         fpX += 1
 
     elif player.dirX > 0:
-        while ghostNodes[fpY][fpX] != 0:
+        while ghostNodes[fpY][fpX] != 0 and count < 5:
+            count += 1
             fpX += 1
         fpX -= 1
+    pinky_node = ghostNodes[fpY][fpX]
     return ghostNodes[fpY][fpX]
 
+sudo_node = [0, 0]  # [x] [y]
+def get_inky_node():
+    global sudo_node
+    global pinky_node
+    sudo_node[0] = player.x + (player.x - ghost.x)
+    sudo_node[1] = player.y + (player.y - ghost.y)
+
+    return player.findNode(ghostNodes, [sudo_node[0], sudo_node[1]])
+
+
+def getPathInky():  # TODO: Need to do implement alternate route after reaching first node
+    if player.hasMoved() and not ghostPink.isLeaving:
+        node = get_inky_node()
+        # node = player.findNode(ghostNodes)
+        ghostPink.bestPath = []
+        ghostPink.getPath(ghostPink.currentNode, node)
+        ghostPink.shortestSize = 9223372036854775807
+
+        # reset all nodes to discoverable
+        for row in ghostNodes:
+            for val in row:
+                if val == 0:
+                    pass
+                else:
+                    val.status = 0
 
 def getPathPinky():
     # we want the ghost to take the starting path until it has left home
-    if player.hasMoved() and not ghostPink.isLeaving:
+    if player.hasMoved() and not ghost.isLeaving:
         node = get_pinky_node()
         # node = player.findNode(ghostNodes)
         ghostPink.bestPath = []
@@ -141,13 +169,15 @@ def update():
     #only start moving the ghost if the player has made an input
     if firstMove == True:
         tunnel.teleportPlayer(player)
-        if frameCounter % 2 == 0:
+        if frameCounter % 3 == 0:
+            getPathPinky()
+        if frameCounter % 3 == 1:
             getPathBlinky()
-            # getPathInky()
-
+        if frameCounter % 3 == 2:
+            getPathInky()
         ghost.move(player)
         ghostPink.move(player)
-        # ghostBlue.move(player)
+        ghostBlue.move(player)
 
     #draw pellets and power pellets
     for pellet in reversed(pellet_list):
@@ -163,7 +193,6 @@ def update():
 
 #---------------------------------------------------------------------------
 def draw():
-
     if gameStarted == False:
         #text, size, xpos, ypos, center text at point
         drawText("Click Any Button To Play", 45, w/2, h/2, True)
@@ -182,9 +211,12 @@ def draw():
 
         global ghost
         global ghostPink
+        global ghostBlue
         ghost.draw(screen, (255, 0, 0))
         ghostPink.draw(screen, (255, 130, 130))
+        ghostBlue.draw(screen, (100, 220, 255))
         drawText("Score: " + str(player.score), 20, 0, 580, False)
+        pygame.draw.circle(screen, (0, 255, 0), (int(sudo_node[0]), int(sudo_node[1])), 24)
 
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)
@@ -285,8 +317,9 @@ placePellets()
 createGhostPath()
 
 #   create ghost
-ghostPink = Ghost(14, 14, ghostNodes, (255, 134, 130))
-ghost = Ghost(14, 14, ghostNodes, (255, 0, 0))
+ghostBlue = Ghost(14, 14, ghostNodes)
+ghostPink = Ghost(14, 14, ghostNodes)
+ghost = Ghost(14, 14, ghostNodes)
 
 
 # To Check FPS --------------------------------------

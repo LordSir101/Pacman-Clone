@@ -3,7 +3,7 @@ import pygame
 from ghostNode import Node
 
 class Ghost:
-    def __init__(self, x, y, ghostPath, colour):
+    def __init__(self, x, y, ghostPath):
         #start at 14 10
         self.nodes = ghostPath
         #a path to help the ghost leave home
@@ -18,7 +18,8 @@ class Ghost:
 
         self.dirX = 0
         self.dirY = 0
-        self.vel = 2
+        # TODO: change vel back to 2
+        self.vel = 1
         self.alpha = 0.3 #how smooth the move animation is
         self.isLeaving = True
 
