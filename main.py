@@ -1,4 +1,5 @@
 import pygame
+import time
 from player import Player
 from pygame import image, Color
 from pellet import Pellet
@@ -6,7 +7,6 @@ from powerPellet import PowerPellet
 from ghostNode import Node
 from ghost import Ghost
 from tunnel import Tunnel
-import time
 
 pygame.init()
 
@@ -71,12 +71,6 @@ def update():
     global prevNode
     global firstMove
 
-
-    # #keeps track of how many frames the current animation has been played for
-    # frameCounter = (frameCounter + 1) % player.animationRate + 2 #iterates from 0 to animationRate + 1
-    # if frameCounter > player.animationRate and player.hasMoved():
-    #     player.changeFrame()
-
     # keeps track of how many frames the current animation has been played for
     # frameCounter does not count during the pause before death animation
     if player.isLiving == True or (player.isLiving == False and player.pauseDone == True):
@@ -87,9 +81,8 @@ def update():
         # change the player.frame_alive every player.animationRate number of frames
         player.frame_alive = (player.frame_alive + 1) % len(player.imgs_alive)
 
-
     # death animation
-    # pause for around 1 second
+    # pause for 1 second
     if player.isLiving == False and player.pauseDone == False:
         time.sleep(1.0)
         player.pauseDone = True
@@ -98,7 +91,7 @@ def update():
         # change the player.frame_dead every player.animationRate number of frames
         player.frame_dead = (player.frame_dead + 1) % len(player.imgs_dead)
 
-    #tells us when the player has started moving pacman
+    # tells us when the player has started moving pacman
     if player.hasMoved():
         firstMove = True
 
@@ -156,7 +149,7 @@ def draw():
         drawText("Score: " + str(player.score), 20, 0, 580, False)
 
 
-        player.draw(screen)
+        # player.draw(screen)
         drawText("Lives: " + str(player.lives), 20, 520, 580, False)
 
 
@@ -284,24 +277,30 @@ while running:
                 gameStarted = True
 
             if event.key == pygame.K_LEFT:
-                player.dirX = -1
-                player.dirY = 0 # set to 0 in case user presses an arrow while holding down another arrow
-                # getPath()
+                player.intendedDirX = -1
+                player.intendedDirY = 0
 
             if event.key == pygame.K_RIGHT:
-                player.dirX = 1
-                player.dirY = 0
-                # getPath()
+                player.intendedDirX = 1
+                player.intendedDirY = 0
 
             if event.key == pygame.K_UP:
-                player.dirY = -1
-                player.dirX = 0
-                # getPath()
+                player.intendedDirX = 0
+                player.intendedDirY = -1
 
             if event.key == pygame.K_DOWN:
-                player.dirY = 1
-                player.dirX = 0
-                # getPath()
+                player.intendedDirX = 0
+                player.intendedDirY = 1
+
+    if player.isMoveValid(player.intendedDirX, player.intendedDirY):
+        # if the intended move is not running into a wall, move as normal
+        player.dirX = player.intendedDirX
+        player.dirY = player.intendedDirY
+
+        # reset intended move
+        player.intendedDirX = None
+        player.intendedDirY = None
+
 
     update()
     draw()
