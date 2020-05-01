@@ -200,7 +200,6 @@ class Ghost:
 
         #check if ghost is near a tunnel:
         #check if node is on left side
-
         for y in range(10, 18):
             if start == self.nodes[y][6]:
                 nearLeftTunnel = True
