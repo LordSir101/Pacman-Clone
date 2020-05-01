@@ -39,7 +39,7 @@ class Player:
 
         # define pacman's spawn location
         self.spawnX = self.scrnW/2 - self.rad + 10
-        self.spawnY = self.scrnH/2 - self.rad + 64
+        self.spawnY = self.scrnH/2 - self.rad + 55
 
         # state variables
         self.isLiving = True

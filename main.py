@@ -56,10 +56,19 @@ def getPath():
                     val.status = 0
 
         node = player.findNode(ghostNodes)
-        #print(node.x, node.y)
-        ghost.bestPath = []
-        ghost.getPath(ghost.currentNode, node)
-        ghost.shortestSize = 9223372036854775807
+        #see if ghost's current target is still close to pacman
+        tolerance = 2 #number of indeices apart the nodes can be
+        currX = ghost.bestPath[len(ghost.bestPath) -1].idX
+        currY = ghost.bestPath[len(ghost.bestPath) -1].idY
+        newX = node.idX
+        newY = node.idY
+
+        #if the previous node is within 2 nodes of the new node
+        if currX > newX + 2 or currX < newX -2 or currY > newY + 2 or currY < newY -2:
+            #print(node.x, node.y)
+            ghost.bestPath = []
+            ghost.getPath(ghost.currentNode, node)
+            ghost.shortestSize = 9223372036854775807
 
 
 #---------------------------------------------------------------------------
@@ -144,8 +153,8 @@ def draw():
         global ghost
         ghost.draw(screen)
 
-        # for node in ghost.bestPath:
-        #     pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
+        for node in ghost.bestPath:
+            pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
 
         # display the current score
         drawText("Score: " + str(player.score), 20, 0, 580, False)
