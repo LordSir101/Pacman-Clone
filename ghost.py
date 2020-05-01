@@ -194,8 +194,12 @@ class Ghost:
     def getDist(self, start, target):
         nearTunnel = False
         tunnelDist = 9223372036854775807
-        # check if ghost is near a tunnel:
-        # check if node is on left side
+
+        #******TODO pick specific nodes that count as near a tunnel*******
+        
+        #check if ghost is near a tunnel:
+        #check if node is on left side
+
         if start.idX < 13 and start.idX > 0:
             # distance from node to left tunnel
             dsX = (start.x - self.nodes[14][0].x)**2

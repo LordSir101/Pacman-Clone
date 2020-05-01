@@ -12,7 +12,7 @@ pygame.init()
 
 # window dimensions
 w = 600
-h = 600
+h = 620
 frameCounter = 0
 gameStarted = False
 
@@ -161,7 +161,6 @@ def draw():
 
         if player.lives >= 1:
             screen.blit(sprite, (580, 580))
-
 
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)

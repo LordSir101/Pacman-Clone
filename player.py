@@ -113,6 +113,7 @@ class Player:
         # prevents pacman clipping with the wall
         buffer = 5
 
+
         # if going down, check bottom left and bottom right corners of pacman
         if (dirX == 0 and dirY > 0 and
             self.movemap.get_at((int(nextX + (self.rad - buffer)), int(nextY + (self.rad - buffer)))) == Color(0, 0, 0) and
