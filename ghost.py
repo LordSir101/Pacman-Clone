@@ -88,6 +88,8 @@ class Ghost:
         prevY = start.idY
 
         #check if current is the target node
+        # if start == None or target == None:
+            # print(start, target)
         if start.x == target.x and start.y == target.y:
             #check if this is the shortest path
             if len(self.testPath) < self.shortestSize:
@@ -176,5 +178,5 @@ class Ghost:
 
     def draw(self, screen, colour):
         pygame.draw.circle(screen, colour, [int(self.x), int(self.y)], 15)
-        for x in self.bestPath:
-            pygame.draw.circle(screen, (20, 255, 255), [int(x.x), int(x.y)], 5)
+        # for x in self.bestPath:
+            # pygame.draw.circle(screen, (20, 255, 255), [int(x.x), int(x.y)], 5)

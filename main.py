@@ -88,19 +88,26 @@ sudo_node = [0, 0]  # [x] [y]
 def get_inky_node():
     global sudo_node
     global pinky_node
-    sudo_node[0] = player.x + (player.x - ghost.x)
-    sudo_node[1] = player.y + (player.y - ghost.y)
-
-    return player.findNode(ghostNodes, [sudo_node[0], sudo_node[1]])
-
-
-def getPathInky():  # TODO: Need to do implement alternate route after reaching first node
-    if player.hasMoved() and not ghostPink.isLeaving:
+    global last_inky_node
+    sudo_node[0] = max(int(30), min(int(570), int(player.x + (player.x - ghost.x))))
+    sudo_node[1] = max(int(30), min(int(550), int(player.y + (player.y - ghost.y))))
+    # print(player.findNode(ghostNodes, [sudo_node[0], sudo_node[1]]))
+    node = player.findNode(ghostNodes, [sudo_node[0], sudo_node[1]])
+    if node is None and last_inky_node is None:
+        return player.findNode(ghostNodes)
+    else:
+        last_inky_node = node
+        return node
+last_inky_node = None
+def getPathInky():
+    global last_inky_node
+    if player.hasMoved() and not ghostBlue.isLeaving:
         node = get_inky_node()
-        # node = player.findNode(ghostNodes)
-        ghostPink.bestPath = []
-        ghostPink.getPath(ghostPink.currentNode, node)
-        ghostPink.shortestSize = 9223372036854775807
+        if node is None:
+            node = player.findNode(ghostNodes)
+        ghostBlue.bestPath = []
+        ghostBlue.getPath(ghostBlue.currentNode, node)
+        ghostBlue.shortestSize = 9223372036854775807
 
         # reset all nodes to discoverable
         for row in ghostNodes:
@@ -109,8 +116,7 @@ def getPathInky():  # TODO: Need to do implement alternate route after reaching 
                     pass
                 else:
                     val.status = 0
-
-def getPathPinky():
+def getPathPinky(): # TODO: Need to do implement alternate route after reaching first node
     # we want the ghost to take the starting path until it has left home
     if player.hasMoved() and not ghost.isLeaving:
         node = get_pinky_node()
@@ -126,7 +132,6 @@ def getPathPinky():
                     pass
                 else:
                     val.status = 0
-
 
 def getPathBlinky():
     #we want the ghost to take the starting path until it has left home
@@ -170,11 +175,13 @@ def update():
     if firstMove == True:
         tunnel.teleportPlayer(player)
         if frameCounter % 3 == 0:
-            getPathPinky()
+            pass
         if frameCounter % 3 == 1:
+            getPathPinky()
             getPathBlinky()
-        if frameCounter % 3 == 2:
             getPathInky()
+        if frameCounter % 3 == 2:
+            pass
         ghost.move(player)
         ghostPink.move(player)
         ghostBlue.move(player)
@@ -216,7 +223,6 @@ def draw():
         ghostPink.draw(screen, (255, 130, 130))
         ghostBlue.draw(screen, (100, 220, 255))
         drawText("Score: " + str(player.score), 20, 0, 580, False)
-        pygame.draw.circle(screen, (0, 255, 0), (int(sudo_node[0]), int(sudo_node[1])), 24)
 
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)

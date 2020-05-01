@@ -111,14 +111,14 @@ class Player:
         for row in nodes:
             for val in row:
                 if val != 0:
-                    tolerance  = 25 * 25
+                    tolerance = 25 * 25
                     if optional_other == None:
                         distSquaredX = (val.x - self.x)**2
                         distSquaredY = (val.y - self.y)**2
                     else:
-                        distSquaredX = (val.x - optional_other[0])
-                        distSquaredY = (val.y - optional_other[1])
+                        distSquaredX = (val.x - optional_other[0])**2
+                        distSquaredY = (val.y - optional_other[1])**2
 
                     if distSquaredX < tolerance and distSquaredY < tolerance:
-                        #print(val.x)
+                        # print(val.x)
                         return val
