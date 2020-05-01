@@ -143,8 +143,8 @@ def draw():
         global ghost
         ghost.draw(screen)
 
-        # for node in ghost.bestPath:
-        #     pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
+        for node in ghost.bestPath:
+            pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
 
         drawText("Score: " + str(player.score), 20, 0, h - 30, False)
 
