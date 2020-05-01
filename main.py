@@ -150,7 +150,30 @@ def draw():
 
 
         # player.draw(screen)
-        drawText("Lives: " + str(player.lives), 20, 520, 580, False)
+        # drawText("Lives: " + str(player.lives), 20, 520, 580, False)
+
+    if player.lives == 3:
+     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
+     screen.blit(sprite, (500, 580))
+
+     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
+     screen.blit(sprite, (520, 580))
+
+     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
+     screen.blit(sprite, (540, 580))
+
+    elif player.lives == 2:
+
+     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
+     screen.blit(sprite, (520, 580))
+
+     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
+     screen.blit(sprite, (540, 580))
+
+    elif player.lives == 1:
+
+     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
+     screen.blit(sprite, (540, 580))
 
 
 def drawText(text, size, x, y, center):
