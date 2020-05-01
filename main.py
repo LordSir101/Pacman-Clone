@@ -129,6 +129,7 @@ def draw():
         drawText("Click Any Button To Play", 45, w/2, h/2, True)
     else:
         pygame.draw.rect(screen,(0, 0, 0),(0, 0, w, h))
+
         # background
         screen.blit(pygame.image.load('colourmap.png'), (0,0))
         for pellet in pellet_list:
@@ -146,14 +147,20 @@ def draw():
         # for node in ghost.bestPath:
         #     pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
 
-        drawText("Score: " + str(player.score), 20, 0, h - 30, False)
+        # display the current score
+        drawText("Score: " + str(player.score), 20, 0, 580, False)
 
-        #display lives left
-        for i in range(player.lives + 1):
-            img = pygame.image.load("animations/pacman_move/pacman3.png")
-            stock = pygame.transform.scale(img, (20, 20))
-            screen.blit(stock, (w - i * 25, h - 30))
+        # display the current number of lives
+        sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
 
+        if player.lives >= 3:
+            screen.blit(sprite, (530, 580))
+
+        if player.lives >= 2:
+            screen.blit(sprite, (555, 580))
+
+        if player.lives >= 1:
+            screen.blit(sprite, (580, 580))
 
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)
