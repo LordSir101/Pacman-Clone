@@ -12,7 +12,7 @@ pygame.init()
 
 # window dimensions
 w = 600
-h = 600
+h = 620
 frameCounter = 0
 gameStarted = False
 
@@ -153,11 +153,15 @@ def draw():
         # for node in ghost.bestPath:
         #     pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
 
-        drawText("Score: " + str(player.score), 20, 0, 580, False)
+        drawText("Score: " + str(player.score), 20, 0, h - 30, False)
 
 
         player.draw(screen)
-        drawText("Lives: " + str(player.lives), 20, 520, 580, False)
+        #display lives left
+        for i in range(player.lives + 1):
+            img = pygame.image.load("animations/pacman_move/pacman3.png")
+            stock = pygame.transform.scale(img, (20, 20))
+            screen.blit(stock, (w - i * 25, h - 30))
 
 
 def drawText(text, size, x, y, center):

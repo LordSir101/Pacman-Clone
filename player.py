@@ -81,6 +81,7 @@ class Player:
         nextX = self.x + self.dirX * self.vel + (self.width/2 * self.dirX)
         nextY = self.y + self.dirY *self.vel + (self.height/2 * self.dirY)
 
+        #prevents checking pixels outside of the image
         if(nextX >= movemap.get_width()):
            nextX = movemap.get_width() - 1
 
@@ -92,7 +93,6 @@ class Player:
 
         if(nextY < 0):
            nextY = 0
-
 
 
         if movemap.get_at((int(nextX), int(nextY))) != Color(255,255,255):
