@@ -129,6 +129,7 @@ def draw():
         drawText("Click Any Button To Play", 45, w/2, h/2, True)
     else:
         pygame.draw.rect(screen,(0, 0, 0),(0, 0, w, h))
+
         # background
         screen.blit(pygame.image.load('colourmap.png'), (0,0))
         for pellet in pellet_list:
@@ -146,34 +147,20 @@ def draw():
         # for node in ghost.bestPath:
         #     pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
 
+        # display the current score
         drawText("Score: " + str(player.score), 20, 0, 580, False)
 
+        # display the current number of lives
+        sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
 
-        # player.draw(screen)
-        # drawText("Lives: " + str(player.lives), 20, 520, 580, False)
+        if player.lives >= 3:
+            screen.blit(sprite, (530, 580))
 
-    if player.lives == 3:
-     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
-     screen.blit(sprite, (500, 580))
+        if player.lives >= 2:
+            screen.blit(sprite, (555, 580))
 
-     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
-     screen.blit(sprite, (520, 580))
-
-     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
-     screen.blit(sprite, (540, 580))
-
-    elif player.lives == 2:
-
-     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
-     screen.blit(sprite, (520, 580))
-
-     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
-     screen.blit(sprite, (540, 580))
-
-    elif player.lives == 1:
-
-     sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
-     screen.blit(sprite, (540, 580))
+        if player.lives >= 1:
+            screen.blit(sprite, (580, 580))
 
 
 def drawText(text, size, x, y, center):

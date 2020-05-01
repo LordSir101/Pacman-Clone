@@ -213,14 +213,6 @@ class Player:
             self.dirX = 0
             self.dirY = 0
 
-            # remove a life
-            self.lives -= 1
-
-            # check if no more lives
-            if self.lives <= 0:
-                # display game over text
-                print("GAME OVER")
-
     def respawnEvents(self):
         # respawn pacman
         self.isLiving = True
@@ -239,3 +231,11 @@ class Player:
         self.prevDirY = 0
         self.intendedDirX = None
         self.intendedDirY = None
+
+        # remove a life
+        self.lives -= 1
+
+        # check if no more lives
+        if self.lives <= 0:
+            # display game over text
+            print("GAME OVER")
