@@ -27,8 +27,7 @@ class Player:
         self.y = height/2 - self.height/2 + 60
         self.prevX = -1
         self.prevY = -1
-        # TODO: change vel back to 2.5
-        self.vel = 1.5
+        self.vel = 2.5
         self.dirX = 0
         self.dirY = 0
         self.score = 0

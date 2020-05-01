@@ -18,8 +18,7 @@ class Ghost:
 
         self.dirX = 0
         self.dirY = 0
-        # TODO: change vel back to 2
-        self.vel = 1
+        self.vel = 2
         self.alpha = 0.3 #how smooth the move animation is
         self.isLeaving = True
 
