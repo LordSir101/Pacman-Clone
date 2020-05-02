@@ -51,7 +51,7 @@ def getPath():
         #reset all nodes to discoverable
         for row in ghostNodes:
             for val in row:
-                if val != 0:
+                if val != 0 and val != ghostNodes[12][14] and val != ghostNodes[12][15]:
                     val.status = 0
 
         node = player.findNode(ghostNodes)
@@ -121,10 +121,8 @@ def update():
     if frameCounter % player.animationRate == 0 and player.pauseDone == True:
         # change the player.frame_dead every player.animationRate number of frames
         player.frame_dead = (player.frame_dead + 1) % len(player.imgs_dead)
-
-    # tells us when the player has started moving pacman
-    if player.hasMoved():
-        firstMove = True
+        if player.frame_dead == len(player.imgs_dead) - 1:
+            ghost.deathEvents()
 
     if player.isLiving == True:
         player.move()
@@ -320,18 +318,22 @@ while running:
             if event.key == pygame.K_LEFT:
                 player.intendedDirX = -1
                 player.intendedDirY = 0
+                firstMove = True
 
             if event.key == pygame.K_RIGHT:
                 player.intendedDirX = 1
                 player.intendedDirY = 0
+                firstMove = True
 
             if event.key == pygame.K_UP:
                 player.intendedDirX = 0
                 player.intendedDirY = -1
+                firstMove = True
 
             if event.key == pygame.K_DOWN:
                 player.intendedDirX = 0
                 player.intendedDirY = 1
+                firstMove = True
 
     if player.isMoveValid(player.intendedDirX, player.intendedDirY):
         # if the intended move is not running into a wall, move as normal
