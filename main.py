@@ -135,10 +135,9 @@ def getPathPinky(): # TODO: Need to do implement alternate route after reaching 
 def getPathBlinky():
     #we want the ghost to take the starting path until it has left home
     if player.hasMoved() and not ghost.isLeaving:
-        node = player.findNode(ghostNodes)
-        ghost.bestPath = []
-        ghost.getPath(ghost.currentNode, node)
-        ghost.shortestSize = 9223372036854775807
+        # ghost.bestPath = []
+        # ghost.getPath(ghost.currentNode, node)
+        # ghost.shortestSize = 9223372036854775807
 
         #reset all nodes to discoverable
         for row in ghostNodes:
@@ -193,7 +192,11 @@ def update():
     global ghost
     global prevNode
     global firstMove
-    
+
+
+    # pygame.time.Clock().tick(40)
+
+
     # keeps track of how many frames the current animation has been played for
     # frameCounter does not count during the pause before death animation
     if player.isLiving == True or (player.isLiving == False and player.pauseDone == True):
@@ -221,7 +224,7 @@ def update():
         tunnel.teleportPlayer(player)
         if frameCounter % 3 == 0:
             pass
-        if frameCounter % 3 == 1:
+        if frameCounter % 2 == 0:
             getPathPinky()
             getPathBlinky()
             getPathInky()
@@ -435,7 +438,7 @@ while running:
         # key event handler-------------------------
         if event.type == pygame.KEYDOWN:
 
-            if gameStarted is False:
+            if gameStarted == False:
                 gameStarted = True
 
             if event.key == pygame.K_LEFT:

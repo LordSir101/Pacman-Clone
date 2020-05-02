@@ -38,13 +38,13 @@ class Ghost:
 
         #when the ghost reaches a node in its path, move to the next node
         if self.placeOnPath < len(self.bestPath):
-            tolerance  = self.alpha * self.alpha #how close a ghost has to be to a node to consider it "reached"
+            tolerance = self.alpha * self.alpha #how close a ghost has to be to a node to consider it "reached"
             distSquaredX = (self.x - self.bestPath[self.placeOnPath].x)**2
             distSquaredY = (self.y - self.bestPath[self.placeOnPath].y)**2
 
             if distSquaredX < tolerance and distSquaredY < tolerance:
                 #when the ghost reaches a node in its path, move to the next node
-                self.placeOnPath +=1
+                self.placeOnPath += 1
                 if self.placeOnPath < len(self.bestPath):
                     next = self.bestPath[self.placeOnPath]
                     if next == self.nodes[14][28] and self.bestPath[self.placeOnPath -1] == self.nodes[14][2]:
