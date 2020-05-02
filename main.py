@@ -238,7 +238,7 @@ def update():
         # only start moving the ghost if the player has made an input
         if firstMove == True:
             tunnel.teleportPlayer(player)
-            getPath()
+            getPathBlinky()
             ghost.move(player)
 
     # check if pacman and ghost collide
@@ -435,10 +435,10 @@ while running:
         # key event handler-------------------------
         if event.type == pygame.KEYDOWN:
 
-            if gameStarted == False:
+            if gameStarted is False:
                 gameStarted = True
 
-           if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT:
                 player.intendedDirX = -1
                 player.intendedDirY = 0
                 firstMove = True

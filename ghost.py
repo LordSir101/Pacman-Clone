@@ -305,8 +305,8 @@ class Ghost:
         #
         #     choices.remove(dir)
 
-    def draw(self, screen):
-        pygame.draw.circle(screen, (255, 0, 0), [int(self.x), int(self.y)], 10)
+    def draw(self, screen, colour):
+        pygame.draw.circle(screen, colour, [int(self.x), int(self.y)], 10)
 
     def deathEvents(self):
         #reset all nodes to discoverable
