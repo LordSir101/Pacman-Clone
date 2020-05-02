@@ -143,7 +143,7 @@ def getPathBlinky():
         #reset all nodes to discoverable
         for row in ghostNodes:
             for val in row:
-                if val != 0:
+                if val != 0 and val != ghostNodes[12][14] and val != ghostNodes[12][15]:
                     val.status = 0
 
         node = player.findNode(ghostNodes)
@@ -213,10 +213,8 @@ def update():
     if frameCounter % player.animationRate == 0 and player.pauseDone == True:
         # change the player.frame_dead every player.animationRate number of frames
         player.frame_dead = (player.frame_dead + 1) % len(player.imgs_dead)
-
-    # tells us when the player has started moving pacman
-    if player.hasMoved():
-        firstMove = True
+        if player.frame_dead == len(player.imgs_dead) - 1:
+            ghost.deathEvents()
 
     #only start moving the ghost if the player has made an input
     if firstMove == True:

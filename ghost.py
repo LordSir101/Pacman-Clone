@@ -12,6 +12,8 @@ class Ghost:
         self.testPath = []
         self.placeOnPath = 1
         self.shortestSize = 9223372036854775807
+        self.startX = x
+        self.startY = y
         self.currentNode = self.nodes[y][x]  #ypos #xpos
 
         self.x = self.currentNode.x
@@ -31,8 +33,8 @@ class Ghost:
         if self.placeOnPath == len(self.bestPath) -1:
             self.isLeaving = False
             #close the entrance to home so the ghost cant go back in
-            self.nodes[12][14] = 0
-            self.nodes[12][15] = 0
+            self.nodes[12][14].status = 1
+            self.nodes[12][15].status = 1
 
         #when the ghost reaches a node in its path, move to the next node
         if self.placeOnPath < len(self.bestPath):
@@ -303,7 +305,29 @@ class Ghost:
         #
         #     choices.remove(dir)
 
-    def draw(self, screen, colour):
-        pygame.draw.circle(screen, colour, [int(self.x), int(self.y)], 15)
-        # for x in self.bestPath:
-            # pygame.draw.circle(screen, (20, 255, 255), [int(x.x), int(x.y)], 5)
+    def draw(self, screen):
+        pygame.draw.circle(screen, (255, 0, 0), [int(self.x), int(self.y)], 10)
+
+    def deathEvents(self):
+        #reset all nodes to discoverable
+        for row in self.nodes:
+            for val in row:
+                if val != 0:
+                    val.status = 0
+
+        self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14] ] #
+        self.testPath = []
+        self.placeOnPath = 1
+        self.shortestSize = 9223372036854775807
+        self.currentNode = self.nodes[self.startY][self.startX]  #ypos #xpos
+
+        self.x = self.currentNode.x
+        self.y = self.currentNode.y
+        self.dirX = 0
+        self.dirY = 0
+        self.vel = 2
+        self.isLeaving = True
+
+
+
+        self.setDirection()
