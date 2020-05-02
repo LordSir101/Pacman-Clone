@@ -31,7 +31,7 @@ class Player:
         self.scrnH = height
 
         # use an image as reference for pacman dimensions
-        self.scale = 25
+        self.scale = 28
         self.sprite = pygame.transform.scale(self.imgs_alive[1], (self.scale, self.scale))
         self.rad = (self.sprite.get_width() / 2) + 1
         self.width = self.sprite.get_width()
@@ -39,7 +39,7 @@ class Player:
 
         # define pacman's spawn location
         self.spawnX = self.scrnW/2 - self.rad + 10
-        self.spawnY = self.scrnH/2 - self.rad + 55
+        self.spawnY = self.scrnH/2 - self.rad + 54
 
         # state variables
         self.isLiving = True
@@ -58,8 +58,8 @@ class Player:
         self.dirY = 0
 
         # previous movement variables
-        self.prevX = None       #{ initialized as None, since there is no initial previous move
-        self.prevY = None       #{
+        self.prevX = self.x      #{ initialized to inital position
+        self.prevY = self.y      #{
         self.prevDirX = 0       #{ stores the direction from the previous frame
         self.prevDirY = 0       #{
 
@@ -111,8 +111,7 @@ class Player:
            nextY = 0
 
         # prevents pacman clipping with the wall
-        buffer = 5
-
+        buffer = 6
 
         # if going down, check bottom left and bottom right corners of pacman
         if (dirX == 0 and dirY > 0 and

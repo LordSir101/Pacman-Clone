@@ -46,7 +46,6 @@ tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 def getPath():
 
     #we want the ghost to take the starting path until it has left home
-
     if player.hasMoved() and not ghost.isLeaving:
 
         #reset all nodes to discoverable
@@ -56,16 +55,39 @@ def getPath():
                     val.status = 0
 
         node = player.findNode(ghostNodes)
-        #see if ghost's current target is still close to pacman
-        tolerance = 2 #number of indeices apart the nodes can be
-        currX = ghost.bestPath[len(ghost.bestPath) -1].idX
-        currY = ghost.bestPath[len(ghost.bestPath) -1].idY
-        newX = node.idX
-        newY = node.idY
 
-        #if the previous node is within 2 nodes of the new node
-        if currX > newX + 2 or currX < newX -2 or currY > newY + 2 or currY < newY -2:
+        #if ghost has no path, get a new one
+        if len(ghost.bestPath) < 1:
             #print(node.x, node.y)
+            ghost.bestPath = []
+            ghost.getPath(ghost.currentNode, node)
+            ghost.shortestSize = 9223372036854775807
+
+        else:
+            #see if ghost's current target is still close to pacman
+            tol = 3 #number of indeices apart the nodes can be
+            currX = ghost.bestPath[len(ghost.bestPath) -1].idX
+            currY = ghost.bestPath[len(ghost.bestPath) -1].idY
+            newX = node.idX
+            newY = node.idY
+
+            #if the previous node is within tolerance nodes of the new node
+            if currX > newX + tol or currX < newX -tol or currY > newY + tol or currY < newY -tol:
+                ghost.bestPath = []
+                ghost.getPath(ghost.currentNode, node)
+                ghost.shortestSize = 9223372036854775807
+
+    #if the player is still, find the exact node the player is on
+    elif firstMove == True and not ghost.isLeaving:
+        node = player.findNode(ghostNodes)
+        #see if ghost's current target is still close to pacman
+        if len(ghost.bestPath) < 1:
+            return
+
+        curr = ghost.bestPath[len(ghost.bestPath) -1]
+
+        #if the ghost's target is not the same node as pacman, get a new path
+        if curr != node:
             ghost.bestPath = []
             ghost.getPath(ghost.currentNode, node)
             ghost.shortestSize = 9223372036854775807
@@ -79,7 +101,7 @@ def update():
     global ghost
     global prevNode
     global firstMove
-
+    
     # keeps track of how many frames the current animation has been played for
     # frameCounter does not count during the pause before death animation
     if player.isLiving == True or (player.isLiving == False and player.pauseDone == True):
@@ -117,6 +139,7 @@ def update():
     if isColliding(player, ghost):
         # play death animation and remove a life
         player.deathEvents()
+        firstMove = False
 
     # check if pacman is eating pellets
     for pellet in reversed(pellet_list):
