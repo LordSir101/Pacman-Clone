@@ -1,10 +1,11 @@
 from pygame import image, Color
 import pygame
 from ghostNode import Node
+import random
 
 class Ghost:
     def __init__(self, x, y, ghostPath):
-        #start at 14 10
+
         self.nodes = ghostPath
         #a path to help the ghost leave home
         self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14] ] #
@@ -15,6 +16,7 @@ class Ghost:
 
         self.x = self.currentNode.x
         self.y = self.currentNode.y
+        self.rad = 10
 
         self.dirX = 0
         self.dirY = 0
@@ -25,7 +27,12 @@ class Ghost:
         self.setDirection()
 
     def move(self, player):
-        #print(len(self.bestPath))
+
+        if self.placeOnPath == len(self.bestPath) -1:
+            self.isLeaving = False
+            #close the entrance to home so the ghost cant go back in
+            self.nodes[12][14] = 0
+            self.nodes[12][15] = 0
 
         #when the ghost reaches a node in its path, move to the next node
         if self.placeOnPath < len(self.bestPath):
@@ -36,21 +43,29 @@ class Ghost:
             if distSquaredX < tolerance and distSquaredY < tolerance:
                 #when the ghost reaches a node in its path, move to the next node
                 self.placeOnPath +=1
-                self.setDirection()
+                if self.placeOnPath < len(self.bestPath):
+                    next = self.bestPath[self.placeOnPath]
+                    if next == self.nodes[14][28] and self.bestPath[self.placeOnPath -1] == self.nodes[14][2]:
+                        self.currentNode = self.bestPath[self.placeOnPath]
+                        self.x = next.x
+                        self.y = next.y
+                        return
+                    elif next == self.nodes[14][1] and self.bestPath[self.placeOnPath -1] == self.nodes[14][28]:
+                        self.currentNode = self.bestPath[self.placeOnPath]
+                        self.x = next.x
+                        self.y = next.y
+                        return
+                    else:
+                        self.setDirection()
 
             #move the ghost
             if self.placeOnPath < len(self.bestPath):
                 self.currentNode = self.bestPath[self.placeOnPath]
                 self.lerp(self.alpha) #smooth the movement between two points
-            #if there is no path for some reason, stay still
-            else:
-                self.dirX = 0
-                self.dirY = 0
-        if self.placeOnPath == len(self.bestPath):
-            self.isLeaving = False
-            #close the entrance to home so the ghost cant go back in
-            self.nodes[12][14] = 0
-            self.nodes[12][15] = 0
+            #if there is no path for some reason, move randomly
+            #elif len(self.bestPath) == 0:
+                #self.moveRandomly()
+
 
     def setDirection(self):
         if self.placeOnPath < len(self.bestPath):
@@ -105,12 +120,20 @@ class Ghost:
         if not endOfPath:
             #visit each neighbor and check all thier undiscovered neighbors
             #RIGHT
-            rightX = prevX+ 1
-            rightY = prevY
+            if prevX == 28 and prevY == 14:
+                rightX = 1
+                rightY = 14
+            else:
+                rightX = prevX+ 1
+                rightY = prevY
 
             #LEFT
-            leftX = prevX -1
-            leftY = prevY
+            if prevX == 2 and prevY == 14:
+                leftX = 28
+                leftY = 14
+            else:
+                leftX = prevX -1
+                leftY = prevY
 
             #UP
             upX = prevX
@@ -145,23 +168,23 @@ class Ghost:
                 #if the right neighbor is the closest and a valid node, visit it
                 if closest == distRight and right != 0 and right.status == 0:
                     self.gotoNode(right, target)
-                    lookingForClosestNeighbor = False
+                    #lookingForClosestNeighbor = False
                 elif closest == distLeft and left != 0 and left.status == 0:
                     self.gotoNode(left, target)
-                    lookingForClosestNeighbor = False
+                    #lookingForClosestNeighbor = False
                 elif closest == distUp and up != 0 and up.status == 0:
                     self.gotoNode(up, target)
-                    lookingForClosestNeighbor = False
+                    #lookingForClosestNeighbor = False
                 elif closest == distDown and down != 0 and down.status == 0:
                     self.gotoNode(down, target)
-                    lookingForClosestNeighbor = False
+                    #lookingForClosestNeighbor = False
 
                 #if the closest node is not valid, remove it from possible neighbors and try again
-                else:
-                    neighbors.remove(closest)
-                    #if there are no valid neighbors, stop searching
-                    if len(neighbors) == 0:
-                        lookingForClosestNeighbor = False
+                neighbors.remove(closest)
+
+                #if there are no valid neighbors, stop searching
+                if len(neighbors) == 0:
+                    lookingForClosestNeighbor = False
 
             #after checking neighbors, remove from currentPath
             self.testPath.remove(start)
@@ -171,9 +194,114 @@ class Ghost:
 
 
     def getDist(self, start, target):
+        nearRightTunnel = False
+        nearLeftTunnel = False
+        tunnelDist = 9223372036854775807
+
+        #******TODO pick specific nodes that count as near a tunnel*******
+
+        #check if ghost is near a tunnel:
+        #check if node is on left side
+        for y in range(10, 18):
+            if start == self.nodes[y][6]:
+                nearLeftTunnel = True
+            elif start == self.nodes[y][23]:
+                nearRightTunnel = True
+
+            #check the nodes in the tunnles themselves
+            if y == 14:
+                for x in range(30):
+                    if start == self.nodes[y][x] and x <= 6:
+                        nearLeftTunnel = True
+                    elif start == self.nodes[y][x] and x >= 23:
+                        nearRightTunnel = True
+                    #skip the nodes in the middle of the screen
+                    if x == 6:
+                        x = 23
+        #if start.idX < 13 and start.idX > 0:
+        if nearLeftTunnel:
+            #distance from node to left tunnel
+            dsX = (start.x - self.nodes[14][0].x)**2
+            dsY = (start.y - self.nodes[14][0].y)**2
+            #right tunnel to pacman
+            dsX2 = (self.nodes[14][28].x - target.x)**2
+            dsY2 = (self.nodes[14][28].y - target.y)**2
+
+            tunnelDist1 = dsX + dsY
+            tunnelDist2 = dsX2 + dsY2
+            tunnelDist = tunnelDist1 + tunnelDist2
+
+        #check if node is on right side
+        #elif start.idX < 29 and start.idX > 14:
+        elif nearRightTunnel:
+            #distance from node to right tunnel
+            dsX = (start.x - self.nodes[14][28].x)**2
+            dsY = (start.y - self.nodes[14][28].y)**2
+            #left tunnel to pacman
+            dsX2 = (self.nodes[14][0].x - target.x)**2
+            dsY2 = (self.nodes[14][0].y - target.y)**2
+
+            tunnelDist1 = dsX + dsY
+            tunnelDist2 = dsX2 + dsY2
+            tunnelDist = tunnelDist1 + tunnelDist2
+
         distSquaredX = (start.x - target.x)**2
         distSquaredY = (start.y - target.y)**2
-        return distSquaredX + distSquaredY
+        dist = distSquaredX + distSquaredY
+
+        if dist < tunnelDist:
+            return dist
+        else:
+            return tunnelDist
+
+    def moveRandomly(self):
+        # for row in self.nodes:
+        #     for val in row:
+        #         if val != 0:
+        #             val.status = 0
+
+        choicePicked = False
+
+        rightX = self.currentNode.idX+ 1
+        rightY = self.currentNode.idY
+
+        #LEFT
+        leftX = self.currentNode.idX -1
+        leftY = self.currentNode.idY
+
+        #UP
+        upX = self.currentNode.idX
+        upY = self.currentNode.idY -1
+
+        #DOWN
+        downX = self.currentNode.idX
+        downY = self.currentNode.idY + 1
+
+        right = self.nodes[rightY][rightX] if rightY < len(self.nodes) and rightX < len(self.nodes[rightY]) else 0
+        left = self.nodes[leftY][leftX] if leftY < len(self.nodes) and leftX < len(self.nodes[leftY]) else 0
+        up = self.nodes[upY][upX] if upY < len(self.nodes) and upX < len(self.nodes[upY]) else 0
+        down = self.nodes[downY][downX] if downY < len(self.nodes) and downX < len(self.nodes[downY]) else 0
+
+
+        choices = [1, 2, 3, 4]
+
+        # while not choicePicked:
+        #     dir = random.choice(choices)
+        #
+        #     if right != 0 and right.status == 0 and dir == 1:
+        #         self.bestPath = [self.currentNode, right]
+        #         choicePicked = True
+        #     elif left != 0 and left.status == 0 and dir == 2:
+        #         self.bestPath = [self.currentNode, left]
+        #         choicePicked = True
+        #     elif up != 0 and up.status == 0 and dir == 3:
+        #         self.bestPath = [self.currentNode, up]
+        #         choicePicked = True
+        #     elif down != 0 and down.status == 0 and dir == 4:
+        #         self.bestPath = [self.currentNode, down]
+        #         choicePicked = True
+        #
+        #     choices.remove(dir)
 
     def draw(self, screen, colour):
         pygame.draw.circle(screen, colour, [int(self.x), int(self.y)], 15)
