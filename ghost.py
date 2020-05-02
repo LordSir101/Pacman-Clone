@@ -104,6 +104,8 @@ class Ghost:
         prevY = start.idY
 
         #check if current is the target node
+        # if start == None or target == None:
+            # print(start, target)
         if start.x == target.x and start.y == target.y:
             #check if this is the shortest path
             if len(self.testPath) < self.shortestSize:

@@ -149,10 +149,12 @@ class Player:
                 scaled = pygame.transform.scale(sprite, (self.scale, self.scale))
                 screen.blit(scaled, (self.x - self.rad, self.y - self.rad))
             elif self.dirX < 0:
+
                 sprite = pygame.transform.scale(self.imgs_alive[self.frame_alive], (self.scale, self.scale))
                 screen.blit(sprite, (self.x - self.rad, self.y - self.rad))
             elif self.dirY > 0:
                 sprite = pygame.transform.rotate(self.imgs_alive[self.frame_alive], 90)
+
                 scaled = pygame.transform.scale(sprite, (self.scale, self.scale))
                 screen.blit(scaled, (self.x - self.rad, self.y - self.rad))
             elif self.dirY < 0:
@@ -196,13 +198,19 @@ class Player:
                 if self.frame_dead == len(self.imgs_dead) - 1:
                     self.respawnEvents()
 
-    def findNode(self, nodes):
+    def findNode(self, nodes, optional_other=None):
+        # optional_other option is for searching near x, y instead of the player
+        # optional_other = [x, y]
         for row in nodes:
             for val in row:
                 if val != 0:
-                    tolerance  = 25 * 25
-                    distSquaredX = (val.x - self.x)**2
-                    distSquaredY = (val.y - self.y)**2
+                    tolerance = 25 * 25
+                    if optional_other == None:
+                        distSquaredX = (val.x - self.x)**2
+                        distSquaredY = (val.y - self.y)**2
+                    else:
+                        distSquaredX = (val.x - optional_other[0])**2
+                        distSquaredY = (val.y - optional_other[1])**2
 
                     if distSquaredX < tolerance and distSquaredY < tolerance:
                         return val

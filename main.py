@@ -42,11 +42,103 @@ ghostNodes = []
 # create two way tunnel
 tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
-# have the ghost get the path to its target
-def getPath():
 
+#have the ghost get the path to its target
+
+pinky_node = player.findNode(ghostNodes)
+def get_pinky_node():
+    global pinky_node
+    # global ghostNodes
+    future_pos = player.findNode(ghostNodes)
+    fpX = future_pos.idX
+    fpY = future_pos.idY
+    # 14 0 /  14 29
+    if fpY == 14:
+        return player.findNode(ghostNodes)
+
+    count = 1
+    if player.dirY < 0:
+        while ghostNodes[fpY][fpX] != 0 and count < 5:
+            count += 1
+            fpY -= 1
+        fpY += 1
+
+    elif player.dirY > 0:
+        while ghostNodes[fpY][fpX] != 0 and count < 5:
+            count += 1
+            fpY += 1
+        fpY -= 1
+
+    elif player.dirX < 0:
+        while ghostNodes[fpY][fpX] != 0 and count < 5:
+            count += 1
+            fpX -= 1
+        fpX += 1
+
+    elif player.dirX > 0:
+        while ghostNodes[fpY][fpX] != 0 and count < 5:
+            count += 1
+            fpX += 1
+        fpX -= 1
+    pinky_node = ghostNodes[fpY][fpX]
+    return ghostNodes[fpY][fpX]
+
+sudo_node = [0, 0]  # [x] [y]
+def get_inky_node():
+    global sudo_node
+    global pinky_node
+    global last_inky_node
+    sudo_node[0] = max(int(30), min(int(570), int(player.x + (player.x - ghost.x))))
+    sudo_node[1] = max(int(30), min(int(550), int(player.y + (player.y - ghost.y))))
+    # print(player.findNode(ghostNodes, [sudo_node[0], sudo_node[1]]))
+    node = player.findNode(ghostNodes, [sudo_node[0], sudo_node[1]])
+    if node is None and last_inky_node is None:
+        return player.findNode(ghostNodes)
+    else:
+        last_inky_node = node
+        return node
+last_inky_node = None
+def getPathInky():
+    global last_inky_node
+    if player.hasMoved() and not ghostBlue.isLeaving:
+        node = get_inky_node()
+        if node is None:
+            node = player.findNode(ghostNodes)
+        ghostBlue.bestPath = []
+        ghostBlue.getPath(ghostBlue.currentNode, node)
+        ghostBlue.shortestSize = 9223372036854775807
+
+        # reset all nodes to discoverable
+        for row in ghostNodes:
+            for val in row:
+                if val == 0:
+                    pass
+                else:
+                    val.status = 0
+def getPathPinky(): # TODO: Need to do implement alternate route after reaching first node
+    # we want the ghost to take the starting path until it has left home
+    if player.hasMoved() and not ghost.isLeaving:
+        node = get_pinky_node()
+        # node = player.findNode(ghostNodes)
+        ghostPink.bestPath = []
+        ghostPink.getPath(ghostPink.currentNode, node)
+        ghostPink.shortestSize = 9223372036854775807
+
+        #reset all nodes to discoverable
+        for row in ghostNodes:
+            for val in row:
+                if val == 0:
+                    pass
+                else:
+                    val.status = 0
+
+def getPathBlinky():
     #we want the ghost to take the starting path until it has left home
     if player.hasMoved() and not ghost.isLeaving:
+        node = player.findNode(ghostNodes)
+        ghost.bestPath = []
+        ghost.getPath(ghost.currentNode, node)
+        ghost.shortestSize = 9223372036854775807
 
         #reset all nodes to discoverable
         for row in ghostNodes:
@@ -124,8 +216,24 @@ def update():
         if player.frame_dead == len(player.imgs_dead) - 1:
             ghost.deathEvents()
 
+    #only start moving the ghost if the player has made an input
+    if firstMove == True:
+        tunnel.teleportPlayer(player)
+        if frameCounter % 3 == 0:
+            pass
+        if frameCounter % 3 == 1:
+            getPathPinky()
+            getPathBlinky()
+            getPathInky()
+        if frameCounter % 3 == 2:
+            pass
+        ghost.move(player)
+        ghostPink.move(player)
+        ghostBlue.move(player)
+
     if player.isLiving == True:
         player.move()
+
 
         # only start moving the ghost if the player has made an input
         if firstMove == True:
@@ -172,7 +280,14 @@ def draw():
         player.draw(screen)
 
         global ghost
-        ghost.draw(screen)
+        global ghostPink
+        global ghostBlue
+        ghost.draw(screen, (255, 0, 0))
+        ghostPink.draw(screen, (255, 130, 130))
+        ghostBlue.draw(screen, (100, 220, 255))
+        drawText("Score: " + str(player.score), 20, 0, 580, False)
+
+
 
         for node in ghost.bestPath:
             pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
@@ -269,6 +384,9 @@ def placePellets():
             y += 1
         x += 1
 
+
+
+
 def placePowerPellets():
     global powerPellet_list
     global screen
@@ -284,11 +402,15 @@ def doesPowerPelletExistHere(x, y):
             return True
     return False
 
+
 placePowerPellets()
 placePellets()
 createGhostPath()
 
-# create ghost
+
+#   create ghost
+ghostBlue = Ghost(14, 14, ghostNodes)
+ghostPink = Ghost(14, 14, ghostNodes)
 ghost = Ghost(14, 14, ghostNodes)
 
 def isColliding(obj1, obj2):
@@ -303,6 +425,7 @@ def isColliding(obj1, obj2):
 running = True
 while running:
     # loop through all pygame events--------------
+
     for event in pygame.event.get():
 
         # checks if user presses the x in the window
@@ -315,7 +438,7 @@ while running:
             if gameStarted == False:
                 gameStarted = True
 
-            if event.key == pygame.K_LEFT:
+           if event.key == pygame.K_LEFT:
                 player.intendedDirX = -1
                 player.intendedDirY = 0
                 firstMove = True
@@ -343,6 +466,7 @@ while running:
         # reset intended move
         player.intendedDirX = None
         player.intendedDirY = None
+
 
 
     update()
