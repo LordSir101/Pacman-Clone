@@ -42,6 +42,8 @@ ghostNodes = []
 # create two way tunnel
 tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
+startTime = 0
+
 
 #have the ghost get the path to its target
 
@@ -88,6 +90,8 @@ def get_inky_node():
     global sudo_node
     global pinky_node
     global last_inky_node
+
+    #Inky targets a point on a line drawn through inky, through paccman to the opposite side
     sudo_node[0] = max(int(30), min(int(570), int(player.x + (player.x - ghost.x))))
     sudo_node[1] = max(int(30), min(int(550), int(player.y + (player.y - ghost.y))))
     # print(player.findNode(ghostNodes, [sudo_node[0], sudo_node[1]]))
@@ -101,36 +105,65 @@ last_inky_node = None
 def getPathInky():
     global last_inky_node
     if player.hasMoved() and not ghostBlue.isLeaving:
+        #reset all nodes to discoverable
+        for row in ghostNodes:
+            for val in row:
+                if val != 0 and val != ghostNodes[12][14] and val != ghostNodes[12][15]:
+                    val.status = 0
+
         node = get_inky_node()
         if node is None:
             node = player.findNode(ghostNodes)
-        ghostBlue.bestPath = []
-        ghostBlue.getPath(ghostBlue.currentNode, node)
-        ghostBlue.shortestSize = 9223372036854775807
 
-        # reset all nodes to discoverable
-        for row in ghostNodes:
-            for val in row:
-                if val == 0:
-                    pass
-                else:
-                    val.status = 0
+        #if ghost has no path, get a new one
+        if len(ghostBlue.bestPath) < 1:
+            #print(node.x, node.y)
+            ghostBlue.bestPath = []
+            ghostBlue.getPath(ghost.currentNode, node)
+            ghostBlue.shortestSize = 9223372036854775807
+        else:
+            tol = 3 #number of indeices apart the nodes can be
+            currX = ghostBlue.bestPath[len(ghostBlue.bestPath) -1].idX
+            currY = ghostBlue.bestPath[len(ghostBlue.bestPath) -1].idY
+            newX = node.idX
+            newY = node.idY
+
+            #if the previous node is not within tolerance nodes of the new node
+            if currX > newX + tol or currX < newX -tol or currY > newY + tol or currY < newY -tol:
+                ghostBlue.bestPath = []
+                ghostBlue.getPath(ghostBlue.currentNode, node)
+                ghostBlue.shortestSize = 9223372036854775807
+
 def getPathPinky(): # TODO: Need to do implement alternate route after reaching first node
     # we want the ghost to take the starting path until it has left home
-    if player.hasMoved() and not ghost.isLeaving:
-        node = get_pinky_node()
-        # node = player.findNode(ghostNodes)
-        ghostPink.bestPath = []
-        ghostPink.getPath(ghostPink.currentNode, node)
-        ghostPink.shortestSize = 9223372036854775807
+    if player.hasMoved() and not ghostPink.isLeaving:
 
         #reset all nodes to discoverable
         for row in ghostNodes:
             for val in row:
-                if val == 0:
-                    pass
-                else:
+                if val != 0 and val != ghostNodes[12][14] and val != ghostNodes[12][15]:
                     val.status = 0
+        node = get_pinky_node()
+        # node = player.findNode(ghostNodes)
+        #if ghost has no path, get a new one
+        if len(ghostPink.bestPath) < 1:
+            #print(node.x, node.y)
+            ghostPink.bestPath = []
+            ghostPink.getPath(ghost.currentNode, node)
+            ghostPink.shortestSize = 9223372036854775807
+
+        else:
+            tol = 3 #number of indeices apart the nodes can be
+            currX = ghostPink.bestPath[len(ghostPink.bestPath) -1].idX
+            currY = ghostPink.bestPath[len(ghostPink.bestPath) -1].idY
+            newX = node.idX
+            newY = node.idY
+
+            #if the previous node is not within tolerance nodes of the new node
+            if currX > newX + tol or currX < newX -tol or currY > newY + tol or currY < newY -tol:
+                ghostPink.bestPath = []
+                ghostPink.getPath(ghostPink.currentNode, node)
+                ghostPink.shortestSize = 9223372036854775807
 
 def getPathBlinky():
     #we want the ghost to take the starting path until it has left home
@@ -162,7 +195,7 @@ def getPathBlinky():
             newX = node.idX
             newY = node.idY
 
-            #if the previous node is within tolerance nodes of the new node
+            #if the previous node is not within tolerance nodes of the new node
             if currX > newX + tol or currX < newX -tol or currY > newY + tol or currY < newY -tol:
                 ghost.bestPath = []
                 ghost.getPath(ghost.currentNode, node)
@@ -171,17 +204,24 @@ def getPathBlinky():
     #if the player is still, find the exact node the player is on
     elif firstMove == True and not ghost.isLeaving:
         node = player.findNode(ghostNodes)
-        #see if ghost's current target is still close to pacman
+        # #see if ghost's current target is still close to pacman
         if len(ghost.bestPath) < 1:
             return
 
-        curr = ghost.bestPath[len(ghost.bestPath) -1]
+        curr = ghost.bestPath[len(ghost.bestPath)-1]
 
         #if the ghost's target is not the same node as pacman, get a new path
-        if curr != node:
+        if curr.x != node.x or curr.y != node.y:
+            #reset all nodes to discoverable
+            for row in ghostNodes:
+                for val in row:
+                    if val != 0 and val != ghostNodes[12][14] and val != ghostNodes[12][15]:
+                        val.status = 0
+
             ghost.bestPath = []
             ghost.getPath(ghost.currentNode, node)
             ghost.shortestSize = 9223372036854775807
+
 
 
 #---------------------------------------------------------------------------
@@ -193,9 +233,7 @@ def update():
     global prevNode
     global firstMove
 
-
     # pygame.time.Clock().tick(40)
-
 
     # keeps track of how many frames the current animation has been played for
     # frameCounter does not count during the pause before death animation
@@ -218,31 +256,28 @@ def update():
         player.frame_dead = (player.frame_dead + 1) % len(player.imgs_dead)
         if player.frame_dead == len(player.imgs_dead) - 1:
             ghost.deathEvents()
+            ghostPink.deathEvents()
+            ghostBlue.deathEvents()
+            global startTime
+            startTime = time.time()
 
-    #only start moving the ghost if the player has made an input
-    if firstMove == True:
-        tunnel.teleportPlayer(player)
-        if frameCounter % 3 == 0:
-            pass
-        if frameCounter % 2 == 0:
-            getPathPinky()
-            getPathBlinky()
-            getPathInky()
-        if frameCounter % 3 == 2:
-            pass
-        ghost.move(player)
-        ghostPink.move(player)
-        ghostBlue.move(player)
 
     if player.isLiving == True:
         player.move()
-
 
         # only start moving the ghost if the player has made an input
         if firstMove == True:
             tunnel.teleportPlayer(player)
             getPathBlinky()
+            getPathPinky()
+            getPathInky()
+
             ghost.move(player)
+            if time.time() - startTime > 5:
+                ghostPink.move(player)
+            if time.time() - startTime > 10:
+                ghostBlue.move(player)
+
 
     # check if pacman and ghost collide
     if isColliding(player, ghost):
@@ -290,9 +325,7 @@ def draw():
         ghostBlue.draw(screen, (100, 220, 255))
         drawText("Score: " + str(player.score), 20, 0, 580, False)
 
-
-
-        for node in ghost.bestPath:
+        for node in ghostBlue.bestPath:
             pygame.draw.circle(screen, (0, 255, 0), (node.x, node.y), 2)
 
         # display the current score
@@ -440,6 +473,11 @@ while running:
 
             if gameStarted == False:
                 gameStarted = True
+                #startTime = time.time()
+
+            #keep updating starting time until player makes first move
+            if not firstMove:
+                startTime = time.time()
 
             if event.key == pygame.K_LEFT:
                 player.intendedDirX = -1
