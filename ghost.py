@@ -8,7 +8,11 @@ class Ghost:
 
         self.nodes = ghostPath
         #a path to help the ghost leave home
-        self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14] ] #
+        self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14], self.nodes[11][15]]
+        #close the entrance to home so the ghost cant go back in
+        self.nodes[12][14].status = 1
+        self.nodes[12][15].status = 1
+
         self.testPath = []
         self.placeOnPath = 1
         self.shortestSize = 9223372036854775807
@@ -18,6 +22,7 @@ class Ghost:
 
         self.x = self.currentNode.x
         self.y = self.currentNode.y
+
         self.rad = 10
 
         self.dirX = 0
@@ -32,19 +37,16 @@ class Ghost:
 
         if self.placeOnPath == len(self.bestPath) -1:
             self.isLeaving = False
-            #close the entrance to home so the ghost cant go back in
-            self.nodes[12][14].status = 1
-            self.nodes[12][15].status = 1
 
         #when the ghost reaches a node in its path, move to the next node
         if self.placeOnPath < len(self.bestPath):
-            tolerance = self.alpha * self.alpha #how close a ghost has to be to a node to consider it "reached"
+            tolerance  = self.alpha * self.alpha #how close a ghost has to be to a node to consider it "reached"
             distSquaredX = (self.x - self.bestPath[self.placeOnPath].x)**2
             distSquaredY = (self.y - self.bestPath[self.placeOnPath].y)**2
 
             if distSquaredX < tolerance and distSquaredY < tolerance:
                 #when the ghost reaches a node in its path, move to the next node
-                self.placeOnPath += 1
+                self.placeOnPath +=1
                 if self.placeOnPath < len(self.bestPath):
                     next = self.bestPath[self.placeOnPath]
                     if next == self.nodes[14][28] and self.bestPath[self.placeOnPath -1] == self.nodes[14][2]:
@@ -92,7 +94,9 @@ class Ghost:
     #root is the originonal start, start is the recusive start
     def getPath(self, start, target):
 
+
         self.placeOnPath = 0
+
         endOfPath = False
 
         #set status to being checked
@@ -104,8 +108,6 @@ class Ghost:
         prevY = start.idY
 
         #check if current is the target node
-        # if start == None or target == None:
-            # print(start, target)
         if start.x == target.x and start.y == target.y:
             #check if this is the shortest path
             if len(self.testPath) < self.shortestSize:
@@ -117,6 +119,7 @@ class Ghost:
 
             #remove goal from current path so we can check other paths from the previous node
             self.testPath.pop()
+
             endOfPath = True
 
         if not endOfPath:
@@ -305,14 +308,14 @@ class Ghost:
         #
         #     choices.remove(dir)
 
-    def draw(self, screen, colour):
-        pygame.draw.circle(screen, colour, [int(self.x), int(self.y)], 10)
+    def draw(self, screen, color):
+        pygame.draw.circle(screen, color, [int(self.x), int(self.y)], 10)
 
     def deathEvents(self):
         #reset all nodes to discoverable
         for row in self.nodes:
             for val in row:
-                if val != 0:
+                if val != 0 and val != self.nodes[12][14] and val != self.nodes[12][15]:
                     val.status = 0
 
         self.bestPath = [self.nodes[14][14], self.nodes[13][14], self.nodes[12][14], self.nodes[11][14] ] #
