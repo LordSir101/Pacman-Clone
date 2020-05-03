@@ -333,15 +333,9 @@ def draw():
 
         # display the current number of lives
         sprite = pygame.transform.scale(player.imgs_alive[2], (20, 20))
+        for i in range(player.lives):
+            screen.blit(sprite, (580 - 25 * i, 580))
 
-        if player.lives >= 3:
-            screen.blit(sprite, (530, 580))
-
-        if player.lives >= 2:
-            screen.blit(sprite, (555, 580))
-
-        if player.lives >= 1:
-            screen.blit(sprite, (580, 580))
 
 def drawText(text, size, x, y, center):
     font = pygame.font.Font('freesansbold.ttf', size)
