@@ -247,3 +247,8 @@ class Player:
         if self.lives <= 0:
             # display game over text
             print("GAME OVER")
+
+    # resets player attributes for a new game
+    def reset(self):
+        self.lives = 3
+        self.score = 0

@@ -44,9 +44,14 @@ tunnel = Tunnel(10, 290, w-10, 290)   # (x1, y1, x2, y2)
 
 startTime = 0
 
+# pre load background image
+pygame.image.load('colourmap.png').convert()
 
-#have the ghost get the path to its target
+image_rect = pygame.image.load('colourmap.png').convert().get_rect()
+image_surface = pygame.Surface((image_rect.width, image_rect.height))
+image_surface.blit(pygame.image.load("colourmap.png"), image_rect)
 
+# have the ghost get the path to its target
 pinky_node = player.findNode(ghostNodes)
 def get_pinky_node():
     global pinky_node
@@ -121,6 +126,7 @@ def getPathInky():
             ghostBlue.bestPath = []
             ghostBlue.getPath(ghost.currentNode, node)
             ghostBlue.shortestSize = 9223372036854775807
+
         else:
             tol = 3 #number of indeices apart the nodes can be
             currX = ghostBlue.bestPath[len(ghostBlue.bestPath) -1].idX
@@ -222,7 +228,19 @@ def getPathBlinky():
             ghost.getPath(ghost.currentNode, node)
             ghost.shortestSize = 9223372036854775807
 
+#reset game values to start new game
+def reset():
+    pellet_list = []
+    powerPellet_list = []
 
+    frameCounter = 0
+    startTime = 0
+
+    # reset player data
+    player.reset()
+
+    placePowerPellets()
+    placePellets()
 
 #---------------------------------------------------------------------------
 def update():
@@ -230,6 +248,8 @@ def update():
     global player
     global frameCounter
     global ghost
+    global ghostBlue
+    global ghostPink
     global prevNode
     global firstMove
 
@@ -261,7 +281,6 @@ def update():
             global startTime
             startTime = time.time()
 
-
     if player.isLiving == True:
         player.move()
 
@@ -280,10 +299,12 @@ def update():
 
 
     # check if pacman and ghost collide
-    if isColliding(player, ghost):
-        # play death animation and remove a life
-        player.deathEvents()
-        firstMove = False
+    ghosts = [ghost, ghostBlue, ghostPink]
+    for spooker in ghosts:
+        if isColliding(player, spooker):
+            # play death animation and remove a life
+            player.deathEvents()
+            firstMove = False
 
     # check if pacman is eating pellets
     for pellet in reversed(pellet_list):
@@ -300,26 +321,33 @@ def update():
 
 #---------------------------------------------------------------------------
 def draw():
+    global player
+    global ghost
+    global ghostPink
+    global ghostBlue
+
     if gameStarted == False:
         # text, size, xpos, ypos, center text at point
         drawText("Click Any Button To Play", 45, w/2, h/2, True)
+
+    elif player.lives <=0 :
+        drawText("Game Over", 45, w/2, h/2, True)
+
     else:
         pygame.draw.rect(screen,(0, 0, 0),(0, 0, w, h))
 
         # background
-        screen.blit(pygame.image.load('colourmap.png'), (0,0))
+        #screen.blit(pygame.image.load('colourmap.png').convert(), (0,0))
+        screen.blit(image_surface, image_rect)
+
         for pellet in pellet_list:
             pellet.draw()
 
         for powerPellet in powerPellet_list:
             powerPellet.draw()
 
-        global player
         player.draw(screen)
 
-        global ghost
-        global ghostPink
-        global ghostBlue
         ghost.draw(screen, (255, 0, 0))
         ghostPink.draw(screen, (255, 130, 130))
         ghostBlue.draw(screen, (100, 220, 255))
@@ -414,9 +442,6 @@ def placePellets():
             y += 1
         x += 1
 
-
-
-
 def placePowerPellets():
     global powerPellet_list
     global screen
@@ -437,13 +462,13 @@ placePowerPellets()
 placePellets()
 createGhostPath()
 
-
-#   create ghost
+#   create ghosts
 ghostBlue = Ghost(14, 14, ghostNodes)
 ghostPink = Ghost(14, 14, ghostNodes)
 ghost = Ghost(14, 14, ghostNodes)
 
 def isColliding(obj1, obj2):
+
     distSquared = (obj1.x - obj2.x)**2 + (obj1.y - obj2.y)**2
 
     if distSquared <= (obj1.rad + obj2.rad)**2:
@@ -453,6 +478,8 @@ def isColliding(obj1, obj2):
 
 # game loop
 running = True
+pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
+
 while running:
     # loop through all pygame events--------------
 
@@ -471,6 +498,13 @@ while running:
 
             #keep updating starting time until player makes first move
             if not firstMove:
+                # if the game was over, reset values when player starts playing
+                if player.lives <= 0:
+                    reset()
+                    break
+
+                # we need to update time so that the ghosts will only start moving
+                # at specific times when the player starts playing again
                 startTime = time.time()
 
             if event.key == pygame.K_LEFT:
@@ -507,4 +541,5 @@ while running:
     update()
     draw()
     pygame.display.update()
-    #pygame.time.Clock().tick_busy_loop(200)
+    # cap fps at 60
+    pygame.time.Clock().tick_busy_loop(60)
